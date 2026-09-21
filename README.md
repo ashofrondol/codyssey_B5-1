@@ -300,13 +300,13 @@
 | --- | --- | --- | --- |
 | R1 | DB 환경 준비 | ✅ 충족 | SQLite 3 채택. `01_schema.sql:3`, `cafe.db`(커밋됨), `build_and_capture.py:33` |
 | R1-1 | 로컬 실행 가능한 DB 준비 | ✅ 충족 | `01_schema.sql:3` (`DBMS: SQLite 3`), 파일 기반 `cafe.db` 가 저장소에 존재. 스크래치패드 복사본을 Python `sqlite3`(3.46.1)로 열어 5테이블 정상 로드 확인 |
-| R1-2 | SQL 실행 도구 준비 | ✅ 충족 | `build_and_capture.py:1-30`(표준 라이브러리 전용 러너), `README.md:39-41` / `README.md:66-77`(sqlite3 CLI 절차 병기). CLI 미설치 환경 대비 이중 경로 제공 |
+| R1-2 | SQL 실행 도구 준비 | ✅ 충족 | `build_and_capture.py:1-30`(표준 라이브러리 전용 러너), `README.md:415-41` / `README.md:442-77`(sqlite3 CLI 절차 병기). CLI 미설치 환경 대비 이중 경로 제공 |
 | R1-3 | DB 고유 문법에 주석 명시 | ✅ 충족 | `01_schema.sql:8-12`(파일 상단 요약), `:15-18`(PRAGMA), `:33-36`(AUTOINCREMENT), `:50-55`(DATE 어피니티·`DATE('now')` UTC), `:101-105`(DATETIME); `03_queries.sql:20-24`(EXPLAIN QUERY PLAN / sqlite_master / IF NOT EXISTS), `:297`, `:339-343`; `04_bonus.sql:76`, `:192-195`(`DATE()` 의 MySQL/PostgreSQL 대응 표기). 누락 문법 미발견 |
 | R2 | 데이터 모델 설계 | ✅ 충족 | 카페 주문 도메인, 5테이블 / 1:N 4개 |
 | R2-1 | 최소 4개 테이블 | ✅ 충족 | 5개 — `01_schema.sql:32`(customer), `:65`(category), `:73`(menu), `:97`(order_header), `:120`(order_detail) |
 | R2-2 | 각 테이블 PK | ✅ 충족 | `01_schema.sql:37,66,74,98,121` 모두 `id INTEGER PRIMARY KEY AUTOINCREMENT`. 실행 검증: `PRAGMA table_info` 5테이블 전부 pk=`id` |
 | R2-3 | FK 2개 이상으로 1:N | ✅ 충족 | FK 4개 — `01_schema.sql:91`(menu→category), `:114`(order_header→customer), `:137`(order_detail→order_header, CASCADE), `:140`(order_detail→menu). 관계 요약 `:148-153`. 실행 검증: `PRAGMA foreign_key_list` 로 4개 모두 확인 |
-| R2-4 | 컬럼 타입을 의미에 맞게 | ✅ 충족 | 선택 이유가 컬럼마다 주석으로 남음 — `01_schema.sql:39-40`(TEXT), `:46-48`(phone 을 TEXT 로: 선행 0), `:50-55`(DATE), `:80-81`(금액 INTEGER, REAL 배제), `:85-87`(0/1 + CHECK), `:101-105`(DATETIME). 요약표 `README.md:147-156` |
+| R2-4 | 컬럼 타입을 의미에 맞게 | ✅ 충족 | 선택 이유가 컬럼마다 주석으로 남음 — `01_schema.sql:39-40`(TEXT), `:46-48`(phone 을 TEXT 로: 선행 0), `:50-55`(DATE), `:80-81`(금액 INTEGER, REAL 배제), `:85-87`(0/1 + CHECK), `:101-105`(DATETIME). 요약표 `README.md:523-156` |
 | R2-5 | 역할이 드러나는 이름 | ✅ 충족 | `customer / category / menu / order_header / order_detail`, 컬럼 `joined_at`, `order_date`, `unit_price`, `is_available` — `01_schema.sql:32-146` |
 | R2-6 | 주제를 직접 선정 | ✅ 충족 | '카페 주문 관리' — `01_schema.sql:2`, `README.md:7`. 최소 4테이블·2관계 조건을 여유 있게 수용 |
 | R3 | 제약조건 적용 | ✅ 충족 | NOT NULL / UNIQUE / FK / CHECK 4종 모두 적용 |
@@ -334,7 +334,7 @@
 | R7-2 | 샘플 데이터 SQL 1개 | ✅ 충족 | `02_data.sql` (101줄) |
 | R7-3 | 쿼리 SQL 1개 | ✅ 충족 | `03_queries.sql` (349줄). `drill/03_queries_naked.sql` 은 학습용 주석 제거본이며, 정규화 비교 결과 **SQL 본문이 원본과 완전히 동일**해 제출 파일 분산이 아님(직접 diff 확인) |
 | R7-4 | 결과 캡처 폴더 1개 | ✅ 충족 | `results/` — `results.txt`, `bonus_results.txt` |
-| R7-5 | (선택) ERD 다이어그램 | ✅ 충족 (선택) | `README.md:86-124` Mermaid `erDiagram` — 5엔티티·4관계·PK/FK/제약 표기, 카디널리티 기호 선택 근거까지 `:126-130`. 비고: 별도 정적 이미지 파일(.png/.svg)은 없고 Markdown 렌더링에 의존 |
+| R7-5 | (선택) ERD 다이어그램 | ✅ 충족 (선택) | `README.md:462-124` Mermaid `erDiagram` — 5엔티티·4관계·PK/FK/제약 표기, 카디널리티 기호 선택 근거까지 `:126-130`. 비고: 별도 정적 이미지 파일(.png/.svg)은 없고 Markdown 렌더링에 의존 |
 
 #### 보너스 과제
 
@@ -351,7 +351,7 @@
 | 백엔드 프레임워크 금지 | ✅ 준수 | `build_and_capture.py:31-36` 임포트가 `os, re, sqlite3, sys, unicodedata, datetime` 표준 라이브러리뿐. Flask/Django/FastAPI/Express/Spring 문자열 grep 결과 제출물에 0건(학습 자료 `study/` 의 설명 문장 언급만 존재). API·화면 코드 없음 |
 | 뷰 / 프로시저 / 트리거 금지 | ✅ 준수 | `CREATE VIEW\|TRIGGER\|PROCEDURE` grep 0건. 실행 검증: 빌드한 DB 및 커밋된 `cafe.db` 모두 `sqlite_master` 의 `type IN ('view','trigger')` = **0건** |
 | 로컬 실행 가능한 DB | ✅ 준수 | 파일 기반 SQLite, 외부 서버·계정 불필요 |
-| 정규화 과잉 금지 | ✅ 준수 | 차수 논증 없음. 분리 근거를 도메인 언어로 서술 — `README.md:132-145`(엑셀 한 시트의 수정 이상 → 테이블 분리 매핑), `01_schema.sql:59-63` |
+| 정규화 과잉 금지 | ✅ 준수 | 차수 논증 없음. 분리 근거를 도메인 언어로 서술 — `README.md:508-145`(엑셀 한 시트의 수정 이상 → 테이블 분리 매핑), `01_schema.sql:59-63` |
 
 #### 🔍 발견된 격차와 보완 제안
 
@@ -359,8 +359,8 @@
 
 아래는 감점 사유가 아닌 **문서 정합성 나이트픽** 3건이다.
 
-1. `03_queries.sql:2` 는 "대조/보강 쿼리 **6개**" 라고 적었지만 실제 보강 블록은 Q4-B·Q7-B·Q8-B·Q10-B·Q11-B·Q15-A·Q15-B **7개**이고 `README.md:181` 은 7개로 적었다(파일 상단이 Q15-A/B 를 한 쌍으로 셈). → `03_queries.sql:2` 를 7개로 맞추면 숫자 불일치가 사라진다.
-2. `README.md:16-28` 의 디렉터리 트리에 실제 존재하는 `drill/`, `study/` 두 폴더가 빠져 있다. → 트리에 "학습용(제출 범위 밖)" 표시와 함께 추가하면, 채점자가 제출물과 학습 자료를 구분하기 쉽다.
+1. `03_queries.sql:2` 는 "대조/보강 쿼리 **6개**" 라고 적었지만 실제 보강 블록은 Q4-B·Q7-B·Q8-B·Q10-B·Q11-B·Q15-A·Q15-B **7개**이고 `README.md:557` 은 7개로 적었다(파일 상단이 Q15-A/B 를 한 쌍으로 셈). → `03_queries.sql:2` 를 7개로 맞추면 숫자 불일치가 사라진다.
+2. `README.md:392-28` 의 디렉터리 트리에 실제 존재하는 `drill/`, `study/` 두 폴더가 빠져 있다. → 트리에 "학습용(제출 범위 밖)" 표시와 함께 추가하면, 채점자가 제출물과 학습 자료를 구분하기 쉽다.
 3. `results/results.txt:325-328` 의 `[Q15] CREATE INDEX` 블록은 본문이 비어 있다(DDL 이라 결과셋 없음). Q13/Q14 처럼 `-- 인덱스 2개 생성 완료` 같은 한 줄 마커를 남기면 "실행은 됐는데 출력이 비었다" 와 구분된다.
 
 추가 관찰(요구사항 초과분, 참고용):
@@ -379,11 +379,11 @@
 6. **보너스 위반 4종 재현** — FK / UNIQUE(`customer.email`) / CHECK(`status IN (...)`) / NOT NULL(`customer.email`) 네 건 모두 `results/bonus_results.txt:77,82,87,92` 와 **동일한 에러 메시지** 재현 (B2).
 7. **보너스 (1) 결과 재현** — 세 방식 모두 `김민준·이서연·박지호·정우진` 4행 일치 (B1).
 8. **쿼리 파일 전량 실행** — `03_queries.sql` 의 모든 문장 실행, 구문/런타임 에러 **0건**. 실행 후 상태: 아메리카노 `4000`, order_header **10행**, order_detail **18행**(CASCADE 2행 삭제), 인덱스 5개(직접 2 + `sqlite_autoindex_*` 3) — `results/results.txt:291-343` 캡처와 완전 일치.
-9. **커밋된 `cafe.db` 상태 대조**(복사본) — 5테이블 / 아메리카노 4000 / order_header 10 / order_detail 18 / 인덱스 5개 / view·trigger 0건 → `README.md:30-33` 의 서술과 일치.
+9. **커밋된 `cafe.db` 상태 대조**(복사본) — 5테이블 / 아메리카노 4000 / order_header 10 / order_detail 18 / 인덱스 5개 / view·trigger 0건 → `README.md:406-33` 의 서술과 일치.
 10. **금지 기능 grep** — `CREATE VIEW|CREATE TRIGGER|CREATE PROCEDURE|FUNCTION`, `flask|django|fastapi|express|spring` : 제출 `.sql`·`.py` 에서 0건.
 11. **drill 사본 정합성** — `drill/03_queries_naked.sql`, `drill/04_bonus_naked.sql` 을 주석 제거·공백 정규화 후 원본과 `diff` : **완전 일치**(각각 32/21 문장). 제출 파일과 학습 사본이 어긋나지 않음.
 
-미실행 항목: sqlite3 CLI 의 `-box -header` 출력 경로(`README.md:70-73`)는 CLI 미설치로 직접 재현하지 못했다. 다만 `build_and_capture.py` 가 같은 박스 포맷을 재현하도록 작성되어 있고(`build_and_capture.py:51-53`), 캡처 파일의 표 형식이 이를 뒷받침한다.
+미실행 항목: sqlite3 CLI 의 `-box -header` 출력 경로(`README.md:446-73`)는 CLI 미설치로 직접 재현하지 못했다. 다만 `build_and_capture.py` 가 같은 박스 포맷을 재현하도록 작성되어 있고(`build_and_capture.py:51-53`), 캡처 파일의 표 형식이 이를 뒷받침한다.
 
 ---
 
