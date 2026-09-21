@@ -1,8 +1,8 @@
 ======================================================================
   소스 파일    : 04_bonus.sql
-  생성 시각    : 2026-07-25T19:29:52+09:00
-  SQLite 버전  : 3.39.4
-  Python 버전  : 3.10.10 (win32)
+  생성 시각    : 2026-09-21T13:24:18+00:00
+  SQLite 버전  : 3.46.1
+  Python 버전  : 3.14.4 (linux)
   foreign_keys : ON
   생성 명령    : python build_and_capture.py
 ======================================================================
@@ -69,6 +69,7 @@ QUERY PLAN
 `--CORRELATED SCALAR SUBQUERY 1
 `--SEARCH m USING COVERING INDEX sqlite_autoindex_menu_1 (name=?)
 `--SCAN oh
+`--BLOOM FILTER ON od (order_id=? AND menu_id=?)
 `--SEARCH od USING AUTOMATIC COVERING INDEX (order_id=? AND menu_id=?)
 
 ======================================================================

@@ -292,66 +292,70 @@
 > 점검 방식: 저장소의 실제 소스를 명세의 요구사항 ID 와 1:1 대조. 판정 근거는 파일 경로로 명시.
 > README 의 주장은 근거로 채택하지 않고, `.sql` 원문·캡처 파일·실제 실행 결과로만 판정했다.
 > 저장소는 읽기 전용으로 다뤘다(`git status` 클린 확인). 실행 검증은 SQL 파일을 스크래치패드에 복사해 수행했다.
+>
+> **좌표 표기**: 쿼리를 가리킬 때는 줄번호가 아니라 `-- >>` 라벨 태그를 쓴다 — `03_queries.sql [Q7]`, `04_bonus.sql (2-a)`, `04_bonus.sql 지표 1)`.
+> 줄번호는 위에 한 줄만 삽입해도 전부 밀려 **조용히 거짓이 된다**(실제로 이 표가 한 번 그렇게 깨졌다). 태그는 코드와 함께 움직인다.
+> 그리고 태그가 사라지는 사고는 `build_and_capture.py` 의 `check_readme_tag_refs()` 가 매 실행마다 잡는다 — 이 표의 태그 참조가 실제 라벨을 가리키지 않으면 **종료 코드 1**.
 
 **종합 판정: 충족** — 필수 37개 중 충족 37 / 부분 0 / 미충족 0 / 로컬검증불가 0
 (보너스 3개도 전부 충족. 제약 사항 위반 0건.)
 
 | ID | 요구사항 (요약) | 판정 | 근거 / 비고 |
 | --- | --- | --- | --- |
-| R1 | DB 환경 준비 | ✅ 충족 | SQLite 3 채택. `01_schema.sql:3`, `cafe.db`(커밋됨), `build_and_capture.py:33` |
+| R1 | DB 환경 준비 | ✅ 충족 | SQLite 3 채택. `01_schema.sql:3`, `cafe.db`(커밋됨), `build_and_capture.py` 의 `DB_PATH` 상수 |
 | R1-1 | 로컬 실행 가능한 DB 준비 | ✅ 충족 | `01_schema.sql:3` (`DBMS: SQLite 3`), 파일 기반 `cafe.db` 가 저장소에 존재. 스크래치패드 복사본을 Python `sqlite3`(3.46.1)로 열어 5테이블 정상 로드 확인 |
-| R1-2 | SQL 실행 도구 준비 | ✅ 충족 | `build_and_capture.py:1-30`(표준 라이브러리 전용 러너), `README.md:415-41` / `README.md:442-77`(sqlite3 CLI 절차 병기). CLI 미설치 환경 대비 이중 경로 제공 |
-| R1-3 | DB 고유 문법에 주석 명시 | ✅ 충족 | `01_schema.sql:8-12`(파일 상단 요약), `:15-18`(PRAGMA), `:33-36`(AUTOINCREMENT), `:50-55`(DATE 어피니티·`DATE('now')` UTC), `:101-105`(DATETIME); `03_queries.sql:20-24`(EXPLAIN QUERY PLAN / sqlite_master / IF NOT EXISTS), `:297`, `:339-343`; `04_bonus.sql:76`, `:192-195`(`DATE()` 의 MySQL/PostgreSQL 대응 표기). 누락 문법 미발견 |
+| R1-2 | SQL 실행 도구 준비 | ✅ 충족 | `build_and_capture.py` 모듈 docstring(표준 라이브러리 전용 러너), README `2. 실행 방법` / 그 안의 `sqlite3 CLI 로 직접 실행하기`(CLI 절차 병기). CLI 미설치 환경 대비 이중 경로 제공 |
+| R1-3 | DB 고유 문법에 주석 명시 | ✅ 충족 | `01_schema.sql:8-12`(파일 상단 요약), `:15-18`(PRAGMA), `:33-36`(AUTOINCREMENT), `:50-55`(DATE 어피니티·`DATE('now')` UTC), `:101-105`(DATETIME); `03_queries.sql` 파일 상단 `[이 파일의 DB 고유 문법]` 블록(EXPLAIN QUERY PLAN / sqlite_master / IF NOT EXISTS), `03_queries.sql [Q15-A]`(DROP INDEX IF EXISTS), `03_queries.sql [Q15-B]`(sqlite_master); `04_bonus.sql (1-d)`(EXPLAIN QUERY PLAN), `04_bonus.sql 지표 1)`(`DATE()` 의 MySQL/PostgreSQL 대응 표기). 누락 문법 미발견 |
 | R2 | 데이터 모델 설계 | ✅ 충족 | 카페 주문 도메인, 5테이블 / 1:N 4개 |
 | R2-1 | 최소 4개 테이블 | ✅ 충족 | 5개 — `01_schema.sql:32`(customer), `:65`(category), `:73`(menu), `:97`(order_header), `:120`(order_detail) |
 | R2-2 | 각 테이블 PK | ✅ 충족 | `01_schema.sql:37,66,74,98,121` 모두 `id INTEGER PRIMARY KEY AUTOINCREMENT`. 실행 검증: `PRAGMA table_info` 5테이블 전부 pk=`id` |
 | R2-3 | FK 2개 이상으로 1:N | ✅ 충족 | FK 4개 — `01_schema.sql:91`(menu→category), `:114`(order_header→customer), `:137`(order_detail→order_header, CASCADE), `:140`(order_detail→menu). 관계 요약 `:148-153`. 실행 검증: `PRAGMA foreign_key_list` 로 4개 모두 확인 |
-| R2-4 | 컬럼 타입을 의미에 맞게 | ✅ 충족 | 선택 이유가 컬럼마다 주석으로 남음 — `01_schema.sql:39-40`(TEXT), `:46-48`(phone 을 TEXT 로: 선행 0), `:50-55`(DATE), `:80-81`(금액 INTEGER, REAL 배제), `:85-87`(0/1 + CHECK), `:101-105`(DATETIME). 요약표 `README.md:523-156` |
+| R2-4 | 컬럼 타입을 의미에 맞게 | ✅ 충족 | 선택 이유가 컬럼마다 주석으로 남음 — `01_schema.sql:39-40`(TEXT), `:46-48`(phone 을 TEXT 로: 선행 0), `:50-55`(DATE), `:80-81`(금액 INTEGER, REAL 배제), `:85-87`(0/1 + CHECK), `:101-105`(DATETIME). 요약표 README `3.2 왜 이 컬럼 타입인가` |
 | R2-5 | 역할이 드러나는 이름 | ✅ 충족 | `customer / category / menu / order_header / order_detail`, 컬럼 `joined_at`, `order_date`, `unit_price`, `is_available` — `01_schema.sql:32-146` |
-| R2-6 | 주제를 직접 선정 | ✅ 충족 | '카페 주문 관리' — `01_schema.sql:2`, `README.md:7`. 최소 4테이블·2관계 조건을 여유 있게 수용 |
+| R2-6 | 주제를 직접 선정 | ✅ 충족 | '카페 주문 관리' — `01_schema.sql:2`, README 머리말의 `**주제**` 항목. 최소 4테이블·2관계 조건을 여유 있게 수용 |
 | R3 | 제약조건 적용 | ✅ 충족 | NOT NULL / UNIQUE / FK / CHECK 4종 모두 적용 |
 | R3-1 | NOT NULL 1개 이상 | ✅ 충족 | 다수 — `01_schema.sql:40,44,55,78,81,83,86,99,105,109,122,123,124,129`. 유일한 NULL 허용 컬럼은 `phone`(`:48`)으로 의도가 주석에 명시 |
 | R3-2 | UNIQUE 1개 이상 | ✅ 충족 | 3개 — `01_schema.sql:44`(customer.email), `:67`(category.name), `:78`(menu.name) |
-| R3-3 | FK 가 실제로 동작 (없는 값 참조 차단) | ✅ 충족 | `PRAGMA foreign_keys = ON` 을 4개 스크립트 전부에 선언 — `01_schema.sql:20`, `02_data.sql:10`, `03_queries.sql:27`, `04_bonus.sql:16`. 증거: `results/bonus_results.txt:77` `FOREIGN KEY constraint failed`. **직접 재현함** — `customer_id=999` INSERT 가 `IntegrityError: FOREIGN KEY constraint failed` 로 차단됨 |
+| R3-3 | FK 가 실제로 동작 (없는 값 참조 차단) | ✅ 충족 | `PRAGMA foreign_keys = ON` 을 4개 스크립트 전부에 선언 — `01_schema.sql:20`, `02_data.sql:10`, `03_queries.sql:27`, `04_bonus.sql:16`. 증거: `results/bonus_results.txt:77` `FOREIGN KEY constraint failed`. **직접 재현함** — `customer_id=999` INSERT 가 `IntegrityError: FOREIGN KEY constraint failed` 로 차단됨. **상시 검사**: `build_and_capture.py` 의 `check_schema_and_data()` 가 매 실행마다 `PRAGMA foreign_keys`=1 과 FK 4개를 대조한다 |
 | R4 | 샘플 데이터 준비 | ✅ 충족 | 5테이블 합계 64행 |
 | R4-1 | 각 테이블 10행 이상 | ✅ 충족 | **실측 행 수** category 10 / menu 12 / customer 10 / order_header 12 / order_detail 20 — `02_data.sql:15-25`, `:30-42`, `:47-57`, `:63-75`, `:81-101`. 전 테이블 하한 통과 |
 | R4-2 | FK 로 연결된 실제 관계 | ✅ 충족 | `02_data.sql:81-101`(order_detail 이 order 1~12 · menu 1~12 참조), `:63-75`(order_header 가 customer 1~9 참조). FK 강제 ON 상태에서 오류 없이 전량 입력됨(직접 실행 확인) |
 | R4-3 | 부모 먼저 INSERT | ✅ 충족 | 파일 내 순서 category(`:15`) → menu(`:30`) → customer(`:47`) → order_header(`:63`) → order_detail(`:81`), 의도 명시 `02_data.sql:4`. 빈 DB 에서 `01→02` 재실행 시 에러 0건(직접 확인) |
 | R5 | 핵심 쿼리 15개 | ✅ 충족 | Q1~Q15 정확히 15개 + 대조/보강 7개 |
-| R5-1 | 기본 조회 4개 (WHERE/ORDER BY/LIMIT) | ✅ 충족 | Q1 `03_queries.sql:35-38`(WHERE+ORDER BY), Q2 `:46-49`(WHERE+ORDER BY), Q3 `:56-59`(ORDER BY+LIMIT 5), Q4 `:66-70`(WHERE+ORDER BY+LIMIT 10 — 세 요소 동시 충족). 보강 Q4-B `:78-81`(LIKE 검색) |
-| R5-2 | 조인 4개 (INNER 2+ / LEFT 1+) | ✅ 충족 | INNER 3개 — Q5 `:88-91`, Q6 `:98-108`(4테이블), Q8 `:145-150`; LEFT 1개 — Q7 `:118-124`. 추가로 Q8-B `:158-163` 이 같은 요구를 LEFT 로 재작성해 INNER/LEFT 차이를 9행 vs 10행으로 실증(`results/results.txt:170-204`) |
-| R5-3 | 집계 3개 (COUNT/SUM/AVG 중 2+ & GROUP BY) | ✅ 충족 | 서로 다른 함수 3종 — Q9 COUNT `:170-174`, Q10 SUM `:188-196`, Q11 AVG `:224-229`. 셋 다 GROUP BY 동반. 보강 Q11-B `:239-247` 은 WHERE vs HAVING 대비 |
-| R5-4 | 서브쿼리 1개 이상 | ✅ 충족 | Q12 스칼라 서브쿼리 `03_queries.sql:257-261` (`price > (SELECT AVG(price) ...)`). 보너스에 IN / EXISTS 상관 서브쿼리 추가(`04_bonus.sql:45-72`) |
-| R5-5 | 수정·삭제 2개 (UPDATE/DELETE) | ✅ 충족 | Q13 UPDATE `:272-274` + 결과 확인 SELECT `:277`; Q14 DELETE `:286-287` + 확인 SELECT `:290-291`. 캡처에 영향 행 수 기록(`results/results.txt:292`, `:303`) |
-| R5-6 | 인덱스 1개 + 적용 이유 1줄 | ✅ 충족 | `CREATE INDEX` 2개 `03_queries.sql:321-325`, **적용 이유는 `:312-319` 에 사유 1·2 로 명시**(조인/검색 키, CASCADE 탐색 비용) + 트레이드오프 주석 `:318-319`. 인덱스 전/후 실행계획 대조 `:302-308` / `:330-336`, 캡처 `results/results.txt:317-336` 에 `SCAN → SEARCH` 전환 기록 |
+| R5-1 | 기본 조회 4개 (WHERE/ORDER BY/LIMIT) | ✅ 충족 | `03_queries.sql [Q1]`(WHERE+ORDER BY), `03_queries.sql [Q2]`(WHERE+ORDER BY), `03_queries.sql [Q3]`(ORDER BY+LIMIT 5), `03_queries.sql [Q4]`(WHERE+ORDER BY+LIMIT 10 — 세 요소 동시 충족). 보강 `03_queries.sql [Q4-B]`(LIKE 검색) |
+| R5-2 | 조인 4개 (INNER 2+ / LEFT 1+) | ✅ 충족 | INNER 3개 — `03_queries.sql [Q5]`, `03_queries.sql [Q6]`(4테이블), `03_queries.sql [Q8]`; LEFT 1개 — `03_queries.sql [Q7]`. 추가로 `03_queries.sql [Q8-B]` 가 같은 요구를 LEFT 로 재작성해 INNER/LEFT 차이를 9행 vs 10행으로 실증(`results/results.txt:170-204`) |
+| R5-3 | 집계 3개 (COUNT/SUM/AVG 중 2+ & GROUP BY) | ✅ 충족 | 서로 다른 함수 3종 — COUNT `03_queries.sql [Q9]`, SUM `03_queries.sql [Q10]`, AVG `03_queries.sql [Q11]`. 셋 다 GROUP BY 동반. 보강 `03_queries.sql [Q11-B]` 는 WHERE vs HAVING 대비 |
+| R5-4 | 서브쿼리 1개 이상 | ✅ 충족 | 스칼라 서브쿼리 `03_queries.sql [Q12]` (`price > (SELECT AVG(price) ...)`). 보너스에 IN 서브쿼리 `04_bonus.sql (1-b)` / EXISTS 상관 서브쿼리 `04_bonus.sql (1-c)` 추가 |
+| R5-5 | 수정·삭제 2개 (UPDATE/DELETE) | ✅ 충족 | UPDATE `03_queries.sql [Q13]` (+ 같은 블록의 결과 확인 SELECT); DELETE `03_queries.sql [Q14]` (+ 같은 블록의 확인 SELECT). 캡처에 영향 행 수 기록(`results/results.txt:293`, `:303`) |
+| R5-6 | 인덱스 1개 + 적용 이유 1줄 | ✅ 충족 | `CREATE INDEX` 2개 `03_queries.sql [Q15]`, **적용 이유는 같은 블록 라벨 주석에 사유 1·2 로 명시**(조인/검색 키, CASCADE 탐색 비용) + 트레이드오프 주석 동반. 인덱스 전/후 실행계획 대조 `03_queries.sql [Q15-A]` / `03_queries.sql [Q15-B]`, 캡처 `results/results.txt:317-336` 에 `SCAN → SEARCH` 전환 기록 |
 | R5-7 | 총 15개 이상 | ✅ 충족 | 핵심 Q1~Q15 = 15개(범주별 하한 4/4/3/1/2/1 을 모두 충족) + 대조·보강 Q4-B·Q7-B·Q8-B·Q10-B·Q11-B·Q15-A·Q15-B 7개 |
 | R6 | 결과 확인 자료 | ✅ 충족 | `results/results.txt`(343줄), `results/bonus_results.txt`(149줄) |
 | R6-1 | 쿼리마다 실행 결과 확인 가능 | ✅ 충족 | `results/results.txt` 에 Q1~Q15 및 보강 7개 전부 블록으로 존재(`:11,30,45,58,75,86,106,134,152,170,187,205,216,234,252,269,279,291,301,317,325,329`). DDL 인 Q15 는 결과셋이 없는 대신 Q15-B 실행계획과 인덱스 목록(`:329-343`)으로 효과를 확인 |
-| R6-2 | 쿼리마다 한 줄 설명 | ✅ 충족 | 모든 쿼리가 `>> [Qn] 범주 - 무엇을 확인하는가` 형식 주석을 가짐 — `03_queries.sql:30,41,52,62,73,84,94,111,127,141,153,166,177,199,219,232,250,264,280,294,311,328`. 같은 문구가 캡처 헤더에도 복제됨 |
+| R6-2 | 쿼리마다 한 줄 설명 | ✅ 충족 | 모든 쿼리가 `-- >> [Qn] 범주 - 무엇을 확인하는가` 형식 라벨을 가짐 — `03_queries.sql` 에 22개(`03_queries.sql [Q1]` ~ `03_queries.sql [Q15-B]`), `04_bonus.sql` 에 12개(`04_bonus.sql (1-a)` ~ `04_bonus.sql 지표 3)`). 같은 문구가 캡처 헤더의 섹션 제목이 되므로 라벨이 빠지면 캡처에서도 즉시 보인다 |
 | R6-3 | 스크린샷 또는 결과 텍스트 | ✅ 충족 | 텍스트 캡처. 재현 메타데이터 포함 — `results/results.txt:1-8`(SQLite 3.39.4 / Python 3.10.10 / `foreign_keys : ON` / 생성 시각), `results/bonus_results.txt:1-8` |
 | R7 | 제출물 구성 | ✅ 충족 | 4종 모두 각 1개 파일/폴더 |
 | R7-1 | 스키마 SQL 1개 | ✅ 충족 | `01_schema.sql` (157줄, DROP→CREATE 실행 순서 정렬 `:23-27`) |
 | R7-2 | 샘플 데이터 SQL 1개 | ✅ 충족 | `02_data.sql` (101줄) |
 | R7-3 | 쿼리 SQL 1개 | ✅ 충족 | `03_queries.sql` (349줄). `drill/03_queries_naked.sql` 은 학습용 주석 제거본이며, 정규화 비교 결과 **SQL 본문이 원본과 완전히 동일**해 제출 파일 분산이 아님(직접 diff 확인) |
 | R7-4 | 결과 캡처 폴더 1개 | ✅ 충족 | `results/` — `results.txt`, `bonus_results.txt` |
-| R7-5 | (선택) ERD 다이어그램 | ✅ 충족 (선택) | `README.md:462-124` Mermaid `erDiagram` — 5엔티티·4관계·PK/FK/제약 표기, 카디널리티 기호 선택 근거까지 `:126-130`. 비고: 별도 정적 이미지 파일(.png/.svg)은 없고 Markdown 렌더링에 의존 |
+| R7-5 | (선택) ERD 다이어그램 | ✅ 충족 (선택) | README `3. 데이터 모델` 의 Mermaid `erDiagram` — 5엔티티·4관계·PK/FK/제약 표기, 카디널리티 기호 선택 근거는 그 바로 아래 `선을 읽는 법` 인용문. 비고: 별도 정적 이미지 파일(.png/.svg)은 없고 Markdown 렌더링에 의존 |
 
 #### 보너스 과제
 
 | ID | 요구사항 (요약) | 판정 | 근거 / 비고 |
 | --- | --- | --- | --- |
-| B1 | 같은 요구를 JOIN·서브쿼리 두 방식으로 + 차이 비교 | ✅ 충족 | 세 방식으로 작성 — JOIN `04_bonus.sql:33-39`, IN 서브쿼리 `:45-54`, EXISTS 상관 서브쿼리 `:62-72`. 비교를 주장이 아닌 실측으로 뒷받침: `EXPLAIN QUERY PLAN` 3종 `:78-101`, 차이 요약 `:103-127`(TEMP B-TREE 2회 vs LIST SUBQUERY vs 조기 종료), 결과 캡처 `results/bonus_results.txt:15-75`. 세 방식 결과 동일(4행)을 직접 재현 확인 |
-| B2 | 정합성 깨뜨려 보기 + 이유·해결 기록 | ✅ 충족 | 4종 위반 시도 — FK `04_bonus.sql:138`, UNIQUE `:142`, CHECK `:147`, NOT NULL `:151`. 실제 에러 캡처 `results/bonus_results.txt:77,82,87,92`. 올바른 해결법(부모 먼저 INSERT)을 `BEGIN…ROLLBACK` 으로 감싸 실험 오염 방지 `:158-180`, 롤백 검증 쿼리 `:178-180`. **직접 재현함** — 4건 모두 동일 에러 재현 |
-| B3 | 미니 리포트 (핵심 지표 3개) | ✅ 충족 | 지표 1 일자별 매출 `04_bonus.sql:197-204`, 지표 2 인기 메뉴 TOP 5 `:211-220`, 지표 3 VIP 고객 TOP 3 `:227-236`. '매출'의 정의(`status='COMPLETED'` 화이트리스트)를 `:184-186` 에 명문화하고 `<> 'CANCELLED'` 를 쓰면 안 되는 이유까지 기록 |
+| B1 | 같은 요구를 JOIN·서브쿼리 두 방식으로 + 차이 비교 | ✅ 충족 | 세 방식으로 작성 — JOIN `04_bonus.sql (1-a)`, IN 서브쿼리 `04_bonus.sql (1-b)`, EXISTS 상관 서브쿼리 `04_bonus.sql (1-c)`. 비교를 주장이 아닌 실측으로 뒷받침: `EXPLAIN QUERY PLAN` 3종과 그 차이 요약이 `04_bonus.sql (1-d)`(TEMP B-TREE 2회 vs LIST SUBQUERY vs 조기 종료), 결과 캡처 `results/bonus_results.txt:15-74`. 세 방식 결과 동일(4행)을 직접 재현 확인 |
+| B2 | 정합성 깨뜨려 보기 + 이유·해결 기록 | ✅ 충족 | 4종 위반 시도 — FK `04_bonus.sql (2-a)`, UNIQUE `04_bonus.sql (2-b)`, CHECK `04_bonus.sql (2-c)`, NOT NULL `04_bonus.sql (2-d)`. 실제 에러 캡처 `results/bonus_results.txt:77,82,87,92`. 올바른 해결법(부모 먼저 INSERT)을 `BEGIN…ROLLBACK` 으로 감싸 실험 오염 방지 — `04_bonus.sql (2-e)`(롤백 검증 쿼리 포함). **직접 재현함** — 4건 모두 동일 에러 재현. **상시 검사**: `build_and_capture.py` 의 `check_violations()` 가 이 4종이 각각 실제로 차단되는지 매 실행마다 확인한다(하나라도 조용히 성공하면 종료 코드 1) |
+| B3 | 미니 리포트 (핵심 지표 3개) | ✅ 충족 | 일자별 매출 `04_bonus.sql 지표 1)`, 인기 메뉴 TOP 5 `04_bonus.sql 지표 2)`, VIP 고객 TOP 3 `04_bonus.sql 지표 3)`. '매출'의 정의(`status='COMPLETED'` 화이트리스트)를 `(3) 미니 리포트` 절 머리 주석에 명문화하고 `<> 'CANCELLED'` 를 쓰면 안 되는 이유까지 기록 |
 
 #### 제약 사항 준수 점검
 
 | 제약 | 판정 | 근거 |
 | --- | --- | --- |
-| 백엔드 프레임워크 금지 | ✅ 준수 | `build_and_capture.py:31-36` 임포트가 `os, re, sqlite3, sys, unicodedata, datetime` 표준 라이브러리뿐. Flask/Django/FastAPI/Express/Spring 문자열 grep 결과 제출물에 0건(학습 자료 `study/` 의 설명 문장 언급만 존재). API·화면 코드 없음 |
+| 백엔드 프레임워크 금지 | ✅ 준수 | `build_and_capture.py` 의 import 블록이 `os, re, sqlite3, sys, unicodedata, datetime` 표준 라이브러리뿐. Flask/Django/FastAPI/Express/Spring 문자열 grep 결과 제출물에 0건(학습 자료 `study/` 의 설명 문장 언급만 존재). API·화면 코드 없음 |
 | 뷰 / 프로시저 / 트리거 금지 | ✅ 준수 | `CREATE VIEW\|TRIGGER\|PROCEDURE` grep 0건. 실행 검증: 빌드한 DB 및 커밋된 `cafe.db` 모두 `sqlite_master` 의 `type IN ('view','trigger')` = **0건** |
 | 로컬 실행 가능한 DB | ✅ 준수 | 파일 기반 SQLite, 외부 서버·계정 불필요 |
-| 정규화 과잉 금지 | ✅ 준수 | 차수 논증 없음. 분리 근거를 도메인 언어로 서술 — `README.md:508-145`(엑셀 한 시트의 수정 이상 → 테이블 분리 매핑), `01_schema.sql:59-63` |
+| 정규화 과잉 금지 | ✅ 준수 | 차수 논증 없음. 분리 근거를 도메인 언어로 서술 — README `3.1 왜 테이블을 이렇게 나눴나`(엑셀 한 시트의 수정 이상 → 테이블 분리 매핑), `01_schema.sql:59-63` |
 
 #### 🔍 발견된 격차와 보완 제안
 
@@ -359,12 +363,12 @@
 
 아래는 감점 사유가 아닌 **문서 정합성 나이트픽** 3건이다.
 
-1. `03_queries.sql:2` 는 "대조/보강 쿼리 **6개**" 라고 적었지만 실제 보강 블록은 Q4-B·Q7-B·Q8-B·Q10-B·Q11-B·Q15-A·Q15-B **7개**이고 `README.md:557` 은 7개로 적었다(파일 상단이 Q15-A/B 를 한 쌍으로 셈). → `03_queries.sql:2` 를 7개로 맞추면 숫자 불일치가 사라진다.
-2. `README.md:392-28` 의 디렉터리 트리에 실제 존재하는 `drill/`, `study/` 두 폴더가 빠져 있다. → 트리에 "학습용(제출 범위 밖)" 표시와 함께 추가하면, 채점자가 제출물과 학습 자료를 구분하기 쉽다.
+1. `03_queries.sql:2` 는 "대조/보강 쿼리 **6개**" 라고 적었지만 실제 보강 블록은 Q4-B·Q7-B·Q8-B·Q10-B·Q11-B·Q15-A·Q15-B **7개**이고 README `4. 핵심 쿼리 15개 (+ 대조/보강 7개)` 제목은 7개로 적었다(파일 상단이 Q15-A/B 를 한 쌍으로 셈). → `03_queries.sql:2` 를 7개로 맞추면 숫자 불일치가 사라진다.
+2. README `1. 디렉터리 구성` 의 트리에 실제 존재하는 `drill/`, `study/` 두 폴더가 빠져 있다. → 트리에 "학습용(제출 범위 밖)" 표시와 함께 추가하면, 채점자가 제출물과 학습 자료를 구분하기 쉽다.
 3. `results/results.txt:325-328` 의 `[Q15] CREATE INDEX` 블록은 본문이 비어 있다(DDL 이라 결과셋 없음). Q13/Q14 처럼 `-- 인덱스 2개 생성 완료` 같은 한 줄 마커를 남기면 "실행은 됐는데 출력이 비었다" 와 구분된다.
 
 추가 관찰(요구사항 초과분, 참고용):
-- 재현성 설계가 명세 이상으로 단단하다 — Q13 을 절대값 대입으로 멱등화(`03_queries.sql:265-268`), Q15-A 의 `DROP INDEX IF EXISTS` 로 대조군 고정(`:299-300`), `04_bonus.sql:19-22` 의 전제조건 자가진단(12/2/20/3500), 캡처 헤더의 `foreign_keys : ON` 자기증명.
+- 재현성 설계가 명세 이상으로 단단하다 — `03_queries.sql [Q13]` 을 절대값 대입으로 멱등화, `03_queries.sql [Q15-A]` 의 `DROP INDEX IF EXISTS` 로 대조군 고정, `04_bonus.sql` 첫 문장의 전제조건 자가진단(12/2/20/3500), 캡처 헤더의 `foreign_keys : ON` 자기증명.
 - 명세가 요구하지 않은 함정 대조(`COUNT(*)` vs `COUNT(col)`, ON 절 vs WHERE 절 필터)를 쿼리로 남겨, 평가 체크리스트의 "실행 결과를 보며 설명" 층위까지 커버한다.
 
 #### 🧪 실행 검증 기록
@@ -379,11 +383,11 @@
 6. **보너스 위반 4종 재현** — FK / UNIQUE(`customer.email`) / CHECK(`status IN (...)`) / NOT NULL(`customer.email`) 네 건 모두 `results/bonus_results.txt:77,82,87,92` 와 **동일한 에러 메시지** 재현 (B2).
 7. **보너스 (1) 결과 재현** — 세 방식 모두 `김민준·이서연·박지호·정우진` 4행 일치 (B1).
 8. **쿼리 파일 전량 실행** — `03_queries.sql` 의 모든 문장 실행, 구문/런타임 에러 **0건**. 실행 후 상태: 아메리카노 `4000`, order_header **10행**, order_detail **18행**(CASCADE 2행 삭제), 인덱스 5개(직접 2 + `sqlite_autoindex_*` 3) — `results/results.txt:291-343` 캡처와 완전 일치.
-9. **커밋된 `cafe.db` 상태 대조**(복사본) — 5테이블 / 아메리카노 4000 / order_header 10 / order_detail 18 / 인덱스 5개 / view·trigger 0건 → `README.md:406-33` 의 서술과 일치.
+9. **커밋된 `cafe.db` 상태 대조**(복사본) — 5테이블 / 아메리카노 4000 / order_header 10 / order_detail 18 / 인덱스 5개 / view·trigger 0건 → README `1. 디렉터리 구성` 의 `cafe.db 의 상태` 인용문과 일치.
 10. **금지 기능 grep** — `CREATE VIEW|CREATE TRIGGER|CREATE PROCEDURE|FUNCTION`, `flask|django|fastapi|express|spring` : 제출 `.sql`·`.py` 에서 0건.
-11. **drill 사본 정합성** — `drill/03_queries_naked.sql`, `drill/04_bonus_naked.sql` 을 주석 제거·공백 정규화 후 원본과 `diff` : **완전 일치**(각각 32/21 문장). 제출 파일과 학습 사본이 어긋나지 않음.
+11. **drill 사본 정합성** — `drill/03_queries_naked.sql`, `drill/04_bonus_naked.sql` 을 주석 제거·공백 정규화 후 원본과 `diff` : **완전 일치**(각각 32/21 문장). 제출 파일과 학습 사본이 어긋나지 않음. → 이후 `build_and_capture.py` 의 `check_drill_copies()` 로 옮겨 **매 실행마다 자동 확인**한다(2026-09-21).
 
-미실행 항목: sqlite3 CLI 의 `-box -header` 출력 경로(`README.md:446-73`)는 CLI 미설치로 직접 재현하지 못했다. 다만 `build_and_capture.py` 가 같은 박스 포맷을 재현하도록 작성되어 있고(`build_and_capture.py:51-53`), 캡처 파일의 표 형식이 이를 뒷받침한다.
+미실행 항목: sqlite3 CLI 의 `-box -header` 출력 경로(README `2. 실행 방법 > sqlite3 CLI 로 직접 실행하기`)는 CLI 미설치로 직접 재현하지 못했다. 다만 `build_and_capture.py` 가 같은 박스 포맷을 재현하도록 작성되어 있고(`build_and_capture.py` 의 `render_box()` / `dwidth()`), 캡처 파일의 표 형식이 이를 뒷받침한다.
 
 ---
 
@@ -421,6 +425,32 @@ python build_and_capture.py
 1. `cafe.db` 를 지우고 `01_schema.sql` + `02_data.sql` 로 새로 만든다
 2. `04_bonus.sql` → `results/bonus_results.txt`
 3. `03_queries.sql` → `results/results.txt`
+4. 만들어진 것이 **기대값과 일치하는지 검사**한다 — 어긋나면 `[FAIL]` 을 찍고 **종료 코드 1**
+
+### 검사가 확인하는 것 (종료 코드로 말한다)
+
+캡처는 "무슨 일이 일어났는지"만 적는다. "일어나야 할 일이 일어났는지"는 말해 주지 않는다.
+그래서 `build_and_capture.py` 는 `EXPECTED_*` 표와 결과를 대조하고, 하나라도 어긋나면 `1` 로 끝난다.
+
+| 검사 | 근거 요구사항 | 어긋나면 |
+| --- | --- | --- |
+| 테이블 5개가 모두 존재 | R2-1 | `[FAIL] 테이블 목록` |
+| 각 테이블 10행 이상 (파괴적 DML **이전** 상태에서) | R4-1 | `[FAIL] <table> 행수 >= 10` |
+| FK 4개가 선언되어 있고 `PRAGMA foreign_keys` 가 켜져 있음 | R2-3 / R3-3 | `[FAIL] FK 관계` |
+| 네 `.sql` 이 각자 `PRAGMA foreign_keys = ON` 을 선언함 (CLI 경로 보호) | R3-3 | `[FAIL] 02_data.sql 이 PRAGMA …` |
+| 제약 위반 4종(FK·UNIQUE·CHECK·NOT NULL)이 **실제로 에러를 냄** | R3-3 / B2 | `[FAIL] (2-a) FK 위반이 차단됨` |
+| Q13/Q14/Q15 적용 후 상태가 `1. 디렉터리 구성` 의 `cafe.db 의 상태` 서술과 같음 | — | `[FAIL] 아메리카노 price (Q13)` |
+| 뷰·트리거 0개 | 과제 제약(0.6) | `[FAIL] view 0개` |
+| `drill/*_naked.sql` 이 원본에서 주석만 뺀 것 | — | `[FAIL] drill/… == …` |
+| README 0.10 의 쿼리 태그 좌표가 `-- >>` 라벨에 **글자 그대로** 들어 있음(grep 가능) | — | `[FAIL] README 참조 …` |
+| README 가 `README.md` / `build_and_capture.py` 를 줄번호로 가리키지 않음 | — | `[FAIL] … 줄번호로 가리키지 않음` |
+
+마지막 세 개가 특히 중요하다. **문서와 사본은 코드와 조용히 갈라지는 것들**이고,
+이 저장소의 README 참조는 실제로 두 번 그렇게 깨졌다(0.10 의 '좌표 표기' 참고).
+
+> 제약 위반 검사는 **성공이 아니라 실패를 기대**한다. `04_bonus.sql` (2-a)~(2-d) 의 INSERT 가
+> 조용히 성공하면 — 즉 `PRAGMA foreign_keys` 가 꺼졌거나 제약 선언이 사라졌으면 —
+> 캡처 파일은 그럴듯하게 만들어지지만 검사는 실패한다.
 
 ### ★ 실행 순서가 중요한 이유
 
