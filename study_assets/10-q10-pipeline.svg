@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="520" viewBox="0 0 880 520" role="img" aria-labelledby="title desc">
+<title id="title">Q10 한 쿼리의 논리 실행 순서와 행 수</title>
+<desc id="desc">고객 10행에서 시작해 완료 주문을 LEFT JOIN 하면 12행, 주문 품목을 붙이면 20행으로 늘었다가, 고객별 GROUP BY 로 다시 10행으로 접히고 COALESCE 가 NULL 합계를 0 으로 바꾼다. status 조건을 ON 이 아니라 WHERE 에 두면 두 조인이 먼저 끝나 13행, 21행이 되고, WHERE 가 17행으로 거른 뒤 결과가 7행이 되어 주문 없는 고객 3명이 사라진다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="880" height="520"/>
+
+<text class="th" x="24" y="32">Q10 한 쿼리 — 행이 펼쳐졌다가 다시 접히는 순서</text>
+<text class="ts" x="24" y="54">위에서 아래로 읽는다 · 보라 배지 = 그 단계를 지난 뒤 남은 행 수</text>
+
+<!-- ① -->
+<rect class="box" x="24" y="68" width="420" height="32" rx="8"/>
+<text class="mono" x="38" y="89">① FROM customer c</text>
+<text class="ts" x="430" y="89" text-anchor="end">고객 명부 전부</text>
+<rect class="purple" x="456" y="68" width="184" height="32" rx="16"/>
+<text class="tb c-purple" x="548" y="89" text-anchor="middle">10행</text>
+
+<!-- ② -->
+<rect class="blue" x="24" y="120" width="420" height="88" rx="8"/>
+<text class="mono" x="38" y="140">② LEFT JOIN order_header oh</text>
+<text class="mono" x="38" y="158">     ON oh.customer_id = c.id</text>
+<text class="mono" x="38" y="176">    AND oh.status = 'COMPLETED'</text>
+<text class="ts c-blue" x="38" y="198">박지호 · 윤하늘 · 서지안은 NULL 로 남음</text>
+<rect class="purple" x="456" y="150" width="184" height="48" rx="16"/>
+<text class="tb c-purple" x="548" y="171" text-anchor="middle">12행</text>
+<text class="ts c-purple" x="548" y="189" text-anchor="middle">짝 9 + NULL 3</text>
+
+<!-- ③ -->
+<rect class="box" x="24" y="228" width="420" height="48" rx="8"/>
+<text class="mono" x="38" y="247">③ LEFT JOIN order_detail od</text>
+<text class="mono" x="38" y="266">     ON od.order_id = oh.id</text>
+<text class="ts" x="430" y="247" text-anchor="end">주문마다 품목 행</text>
+<rect class="purple" x="456" y="228" width="184" height="48" rx="16"/>
+<text class="tb c-purple" x="548" y="250" text-anchor="middle">20행</text>
+<text class="ts c-purple" x="548" y="268" text-anchor="middle">김민준 혼자 6행</text>
+
+<!-- ④ -->
+<rect class="box" x="24" y="296" width="420" height="32" rx="8"/>
+<text class="mono" x="38" y="317">④ GROUP BY c.id, c.name</text>
+<text class="ts" x="430" y="317" text-anchor="end">고객별로 한 줄씩 접기</text>
+<rect class="purple" x="456" y="296" width="184" height="32" rx="16"/>
+<text class="tb c-purple" x="548" y="317" text-anchor="middle">10그룹</text>
+
+<!-- ⑤ -->
+<rect class="box" x="24" y="348" width="420" height="32" rx="8"/>
+<text class="mono" x="38" y="369">⑤ COALESCE(SUM(od.quantity * od.unit_price), 0)</text>
+<rect class="purple" x="456" y="348" width="184" height="32" rx="16"/>
+<text class="tb c-purple" x="548" y="369" text-anchor="middle">NULL → 0</text>
+
+<!-- ⑥ -->
+<rect class="box" x="24" y="400" width="420" height="32" rx="8"/>
+<text class="mono" x="38" y="421">⑥ ORDER BY total_paid DESC, c.id</text>
+<text class="ts" x="430" y="421" text-anchor="end">큰 금액 순</text>
+
+<!-- 결과 -->
+<rect class="green" x="488" y="391" width="368" height="50" rx="10"/>
+<text class="tb c-green" x="672" y="413" text-anchor="middle">결과 10행 · 주문 없는 고객도 0원으로</text>
+<text class="mono" x="672" y="432" text-anchor="middle">김민준 42500 · 한소희 18000 · … · 서지안 0</text>
+
+<!-- 단계 화살표 -->
+<line class="ln ln-blue" x1="64" y1="101" x2="64" y2="116" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="64" y1="209" x2="64" y2="224" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="64" y1="277" x2="64" y2="292" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="64" y1="329" x2="64" y2="344" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="64" y1="381" x2="64" y2="396" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-green" x1="444" y1="416" x2="484" y2="416" marker-end="url(#arrow-green)"/>
+
+<!-- 잘못된 분기 -->
+<text class="tb c-red" x="760" y="78" text-anchor="middle">status 조건을</text>
+<text class="tb c-red" x="760" y="98" text-anchor="middle">WHERE 로 옮기면</text>
+<path class="ln ln-red dash" d="M444,132 L676,132" marker-end="url(#arrow-red)"/>
+<rect class="box dash" x="680" y="108" width="160" height="48" rx="8"/>
+<text class="tb" x="760" y="130" text-anchor="middle">① 조인 13행</text>
+<text class="ts" x="760" y="148" text-anchor="middle">모든 주문 + NULL 1</text>
+<line class="ln ln-red dash" x1="760" y1="157" x2="760" y2="166" marker-end="url(#arrow-red)"/>
+<rect class="box dash" x="680" y="170" width="160" height="48" rx="8"/>
+<text class="tb" x="760" y="192" text-anchor="middle">② 상세까지 21행</text>
+<text class="ts" x="760" y="210" text-anchor="middle">상세 20 + NULL 1</text>
+<line class="ln ln-red dash" x1="760" y1="219" x2="760" y2="228" marker-end="url(#arrow-red)"/>
+<rect class="box dash" x="680" y="232" width="160" height="48" rx="8"/>
+<text class="tb" x="760" y="254" text-anchor="middle">③ WHERE 후 17행</text>
+<text class="ts" x="760" y="272" text-anchor="middle">NULL·취소·대기 줄 탈락</text>
+<line class="ln ln-red dash" x1="760" y1="281" x2="760" y2="290" marker-end="url(#arrow-red)"/>
+<rect class="red dash" x="664" y="294" width="192" height="68" rx="8"/>
+<text class="tb c-red" x="760" y="317" text-anchor="middle">결과 7행</text>
+<text class="ts c-red" x="760" y="333" text-anchor="middle">박지호 · 윤하늘 · 서지안 소멸</text>
+<text class="ts c-red" x="760" y="351" text-anchor="middle">= 사실상 INNER JOIN</text>
+
+<!-- 범례·출처 -->
+<line class="ln ln-blue" x1="24" y1="466" x2="56" y2="466" marker-end="url(#arrow-blue)"/>
+<text class="ts" x="64" y="470">다음 단계</text>
+<line class="ln ln-red dash" x1="144" y1="466" x2="176" y2="466" marker-end="url(#arrow-red)"/>
+<text class="ts" x="184" y="470">점선 = 잘못된 대안</text>
+<rect class="purple" x="320" y="458" width="28" height="16" rx="8"/>
+<text class="ts" x="356" y="470">= 그 단계 뒤 행 수</text>
+<text class="ts" x="24" y="496">캡처: results/results.txt:216-231 · 코드: 03_queries.sql:188-196</text>
+</svg>

@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="496" viewBox="0 0 880 496" role="img" aria-labelledby="title desc">
+<title id="title">엑셀 한 시트 vs 나눈 테이블</title>
+<desc id="desc">왼쪽은 김민준의 주문 2건을 엑셀 한 시트에 적어 이름과 이메일이 4줄마다 반복되는 모습이고, 이메일을 바꾸면 4줄을 모두 고쳐야 하며 메뉴가 없는 굿즈 카테고리는 넣을 줄이 없다. 오른쪽은 같은 데이터를 customer, order_header, order_detail, menu, category 테이블로 나눠 각 사실을 한 번만 저장하고, 자식 테이블의 FK 가 부모를 가리키는 모습이다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="880" height="496"/>
+<text class="th" x="24" y="36">엑셀 한 시트 vs 나눈 테이블</text>
+<text class="ts" x="24" y="58">같은 주문 2건(상세 4줄)을 두 방식으로 저장 · 노랑 = 반복 저장된 칸, 빨강 = 문제, 초록 = 해결</text>
+<text class="tb" x="24" y="92">엑셀 한 시트 (반복 입력)</text>
+<rect class="box" x="24" y="106" width="36" height="30"/>
+<text class="ts tb" x="42.0" y="126" text-anchor="middle">주문</text>
+<rect class="box" x="60" y="106" width="52" height="30"/>
+<text class="ts tb" x="86.0" y="126" text-anchor="middle">고객</text>
+<rect class="box" x="112" y="106" width="164" height="30"/>
+<text class="ts tb" x="194.0" y="126" text-anchor="middle">이메일</text>
+<rect class="box" x="276" y="106" width="80" height="30"/>
+<text class="ts tb" x="316.0" y="126" text-anchor="middle">메뉴</text>
+<rect class="box" x="356" y="106" width="64" height="30"/>
+<text class="ts tb" x="388.0" y="126" text-anchor="middle">카테고리</text>
+<rect class="box" x="420" y="106" width="36" height="30"/>
+<text class="ts tb" x="438.0" y="126" text-anchor="middle">수량</text>
+<rect class="box" x="456" y="106" width="44" height="30"/>
+<text class="ts tb" x="478.0" y="126" text-anchor="middle">단가</text>
+<rect class="bg" x="24" y="136" width="36" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="42.0" y="158" text-anchor="middle">1</text>
+<rect class="yellow" x="60" y="136" width="52" height="34"/>
+<text class="mono" x="86.0" y="158" text-anchor="middle">김민준</text>
+<rect class="yellow" x="112" y="136" width="164" height="34"/>
+<text class="mono" x="194.0" y="158" text-anchor="middle">minjun@example.com</text>
+<rect class="bg" x="276" y="136" width="80" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="316.0" y="158" text-anchor="middle">아메리카노</text>
+<rect class="bg" x="356" y="136" width="64" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="388.0" y="158" text-anchor="middle">커피</text>
+<rect class="bg" x="420" y="136" width="36" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="438.0" y="158" text-anchor="middle">2</text>
+<rect class="bg" x="456" y="136" width="44" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="478.0" y="158" text-anchor="middle">3500</text>
+<rect class="bg" x="24" y="170" width="36" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="42.0" y="192" text-anchor="middle">1</text>
+<rect class="yellow" x="60" y="170" width="52" height="34"/>
+<text class="mono" x="86.0" y="192" text-anchor="middle">김민준</text>
+<rect class="yellow" x="112" y="170" width="164" height="34"/>
+<text class="mono" x="194.0" y="192" text-anchor="middle">minjun@example.com</text>
+<rect class="bg" x="276" y="170" width="80" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="316.0" y="192" text-anchor="middle">크로와상</text>
+<rect class="bg" x="356" y="170" width="64" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="388.0" y="192" text-anchor="middle">베이커리</text>
+<rect class="bg" x="420" y="170" width="36" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="438.0" y="192" text-anchor="middle">1</text>
+<rect class="bg" x="456" y="170" width="44" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="478.0" y="192" text-anchor="middle">4500</text>
+<rect class="bg" x="24" y="204" width="36" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="42.0" y="226" text-anchor="middle">2</text>
+<rect class="yellow" x="60" y="204" width="52" height="34"/>
+<text class="mono" x="86.0" y="226" text-anchor="middle">김민준</text>
+<rect class="yellow" x="112" y="204" width="164" height="34"/>
+<text class="mono" x="194.0" y="226" text-anchor="middle">minjun@example.com</text>
+<rect class="bg" x="276" y="204" width="80" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="316.0" y="226" text-anchor="middle">카페라떼</text>
+<rect class="bg" x="356" y="204" width="64" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="388.0" y="226" text-anchor="middle">커피</text>
+<rect class="bg" x="420" y="204" width="36" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="438.0" y="226" text-anchor="middle">1</text>
+<rect class="bg" x="456" y="204" width="44" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="478.0" y="226" text-anchor="middle">4500</text>
+<rect class="bg" x="24" y="238" width="36" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="42.0" y="260" text-anchor="middle">2</text>
+<rect class="yellow" x="60" y="238" width="52" height="34"/>
+<text class="mono" x="86.0" y="260" text-anchor="middle">김민준</text>
+<rect class="yellow" x="112" y="238" width="164" height="34"/>
+<text class="mono" x="194.0" y="260" text-anchor="middle">minjun@example.com</text>
+<rect class="bg" x="276" y="238" width="80" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="316.0" y="260" text-anchor="middle">티라미수</text>
+<rect class="bg" x="356" y="238" width="64" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="388.0" y="260" text-anchor="middle">디저트</text>
+<rect class="bg" x="420" y="238" width="36" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="438.0" y="260" text-anchor="middle">1</text>
+<rect class="bg" x="456" y="238" width="44" height="34" style="stroke:#9A9CA3;stroke-width:1"/>
+<text class="mono" x="478.0" y="260" text-anchor="middle">6500</text>
+<rect class="yellow" x="24" y="294" width="18" height="14"/>
+<text class="ts" x="50" y="306">김민준 · 이메일이 4줄 모두에 반복 (8칸)</text>
+<text class="ts" x="24" y="334">실제 데이터에서 김민준은 주문 3건 · 상세 6줄 → 한 시트라면 6번 반복</text>
+<rect class="red" x="24" y="400" width="472" height="72" rx="10"/>
+<text class="ts tb c-red" x="40" y="431">이메일 변경 = 4줄 모두 고쳐야 함 (갱신 이상)</text>
+<text class="ts tb c-red" x="40" y="455">메뉴 0개인 '굿즈'는 넣을 줄이 없음 (삽입 이상)</text>
+<text class="tb" x="520" y="92">나눈 테이블 (한 곳에 한 번)</text>
+<rect class="purple" x="520" y="106" width="164" height="62" rx="8"/>
+<text class="mono tb c-purple" x="532" y="126">customer</text>
+<text class="mono" x="532" y="144">1 김민준</text>
+<text class="mono" x="532" y="161">minjun@example.com</text>
+<rect class="purple" x="704" y="106" width="152" height="62" rx="8"/>
+<text class="mono tb c-purple" x="716" y="126">category</text>
+<text class="ts" x="716" y="144">1 커피 · 6 베이커리</text>
+<text class="ts" x="716" y="161">7 디저트 · 10 굿즈</text>
+<rect class="purple" x="520" y="198" width="164" height="62" rx="8"/>
+<text class="mono tb c-purple" x="532" y="218">order_header</text>
+<text class="mono" x="532" y="236">1 → customer 1</text>
+<text class="mono" x="532" y="253">2 → customer 1</text>
+<rect class="purple" x="704" y="198" width="152" height="96" rx="8"/>
+<text class="mono tb c-purple" x="716" y="218">menu</text>
+<text class="ts" x="716" y="236">1 아메리카노 → 1</text>
+<text class="ts" x="716" y="253">2 카페라떼 → 1</text>
+<text class="ts" x="716" y="270">9 크로와상 → 6</text>
+<text class="ts" x="716" y="287">10 티라미수 → 7</text>
+<rect class="purple" x="520" y="322" width="336" height="64" rx="8"/>
+<text class="mono tb c-purple" x="532" y="342">order_detail</text>
+<text class="mono" x="532" y="360">(1,1,2,3500) (1,9,1,4500)</text>
+<text class="mono" x="532" y="377">(2,2,1,4500) (2,10,1,6500)</text>
+<text class="ts" x="646" y="342">(order_id, menu_id, 수량, 단가)</text>
+<line class="ln" x1="560" y1="198" x2="560" y2="172" marker-end="url(#arrow)"/>
+<text class="ts mono" x="568" y="190.0">customer_id</text>
+<line class="ln" x1="560" y1="322" x2="560" y2="264" marker-end="url(#arrow)"/>
+<text class="ts mono" x="568" y="298.0">order_id</text>
+<line class="ln" x1="744" y1="322" x2="744" y2="298" marker-end="url(#arrow)"/>
+<text class="ts mono" x="752" y="315.0">menu_id</text>
+<line class="ln" x1="744" y1="198" x2="744" y2="172" marker-end="url(#arrow)"/>
+<text class="ts mono" x="752" y="190.0">category_id</text>
+<rect class="green" x="520" y="400" width="336" height="72" rx="10"/>
+<text class="ts tb c-green" x="534" y="421">이메일 변경 = customer 1행</text>
+<text class="ts tb c-green" x="534" y="441">굿즈는 메뉴 0개로도 존재</text>
+<text class="ts tb c-green" x="534" y="461">없는 고객 번호 → FOREIGN KEY constraint failed</text>
+</svg>

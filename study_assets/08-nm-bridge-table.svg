@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="460" viewBox="0 0 860 460" role="img" aria-labelledby="title desc">
+<title id="title">주문 N:M 메뉴를 브릿지 테이블로 풀기</title>
+<desc id="desc">주문(order_header)과 메뉴는 N:M 이다. 한 칸에 값 하나만 들어가므로 두 테이블을 직접 이을 수 없고, 실제 스키마는 order_header 1:N order_detail N:1 menu 로 푼다. order_detail 이 브릿지 테이블이며 관계 속성 quantity, unit_price 를 가진다. 고객과 메뉴의 N:M 은 customer 1:N order_header 를 거쳐 간접으로 표현된다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="860" height="460"/>
+
+<!-- 생각 속 관계 -->
+<text x="24" y="40" class="th">생각 속 관계</text>
+<rect class="purple" x="120" y="60" width="180" height="48" rx="10"/>
+<text x="210" y="89" text-anchor="middle"><tspan>주문 </tspan><tspan class="mono">order_header</tspan></text>
+<rect class="purple" x="580" y="60" width="160" height="48" rx="10"/>
+<text x="660" y="89" text-anchor="middle"><tspan>메뉴 </tspan><tspan class="mono">menu</tspan></text>
+<line class="ln ln-red dash" x1="304" y1="84" x2="576" y2="84"/>
+<rect class="bg" x="406" y="70" width="68" height="30"/>
+<text x="440" y="90" text-anchor="middle" class="tb c-red">N : M</text>
+<text x="440" y="128" text-anchor="middle" class="ts c-red">직접 연결 불가 (한 칸에 값 하나)</text>
+
+<!-- 실제 테이블 -->
+<text x="24" y="176" class="th">실제 테이블</text>
+<rect class="purple" x="24" y="196" width="130" height="48" rx="10"/>
+<text x="89" y="225" text-anchor="middle" class="mono">customer</text>
+<rect class="purple" x="234" y="196" width="150" height="48" rx="10"/>
+<text x="309" y="225" text-anchor="middle" class="mono">order_header</text>
+<rect class="yellow" x="464" y="196" width="160" height="48" rx="10"/>
+<text x="544" y="225" text-anchor="middle" class="mono">order_detail</text>
+<rect class="purple" x="704" y="196" width="132" height="48" rx="10"/>
+<text x="770" y="225" text-anchor="middle" class="mono">menu</text>
+
+<line class="ln ln-blue" x1="154" y1="220" x2="230" y2="220" marker-end="url(#arrow-blue)"/>
+<rect class="bg" x="170" y="206" width="44" height="28"/>
+<text x="192" y="224" text-anchor="middle" class="ts c-blue">1 : N</text>
+<line class="ln ln-blue" x1="384" y1="220" x2="460" y2="220" marker-end="url(#arrow-blue)"/>
+<rect class="bg" x="402" y="206" width="44" height="28"/>
+<text x="424" y="224" text-anchor="middle" class="ts c-blue">1 : N</text>
+<line class="ln ln-blue" x1="704" y1="220" x2="628" y2="220" marker-end="url(#arrow-blue)"/>
+<rect class="bg" x="642" y="206" width="44" height="28"/>
+<text x="664" y="224" text-anchor="middle" class="ts c-blue">N : 1</text>
+
+<text x="544" y="266" text-anchor="middle" class="tb">브릿지 테이블</text>
+<text x="544" y="286" text-anchor="middle" class="ts">관계 속성 <tspan class="mono">quantity, unit_price</tspan></text>
+<text x="89" y="266" text-anchor="middle" class="ts">고객 ↔ 메뉴 N:M 은</text>
+<text x="89" y="286" text-anchor="middle" class="ts">헤더를 거쳐 간접</text>
+
+<!-- 실제 데이터 -->
+<rect class="zone" x="24" y="306" width="812" height="92" rx="10"/>
+<text x="40" y="330" class="ts">주문 1 → 아메리카노 · 크로와상</text>
+<text x="40" y="352" class="ts">아메리카노 → 주문 1 · 4 · 6 · 9 · 12</text>
+<text x="40" y="374" class="ts">(주문, 메뉴) 조합 20개 = 상세 20줄 (01+02 기준)</text>
+<line class="ln" x1="468" y1="318" x2="468" y2="386"/>
+<text x="492" y="330" class="ts">간접: 김민준 → 메뉴 4개</text>
+<text x="492" y="352" class="ts">아메리카노 → 고객 4명</text>
+<text x="492" y="374" class="ts">(고객, 메뉴) 조합 18개 (최종 cafe.db 16개)</text>
+
+<!-- 범례 -->
+<line class="ln ln-blue" x1="24" y1="428" x2="60" y2="428" marker-end="url(#arrow-blue)"/>
+<text x="70" y="433" class="ts">화살촉 = N 쪽(자식) · 라벨은 왼쪽 → 오른쪽으로 읽음</text>
+<line class="ln ln-red dash" x1="620" y1="428" x2="656" y2="428"/>
+<text x="666" y="433" class="ts">직접 이을 수 없는 관계</text>
+</svg>

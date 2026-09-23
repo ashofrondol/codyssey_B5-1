@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="520" viewBox="0 0 880 520" role="img" aria-labelledby="title desc">
+<title id="title">서브쿼리 두 가지 — 먼저 값 하나로 바꾸기 vs 행마다 확인하기</title>
+<desc id="desc">왼쪽은 Q12 의 스칼라 서브쿼리다. 괄호 안 AVG 가 먼저 한 번 계산되어 5,181.8 이라는 값 하나가 되고, 바깥은 판매 중 메뉴 11개를 그 값과 비교해 4행을 남긴다. 오른쪽은 (1-c) 의 EXISTS 상관 서브쿼리다. 바깥 고객마다 주문을 살피다가 아메리카노가 든 주문을 하나 찾으면 멈추고, 끝까지 없으면 그 고객은 탈락한다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="880" height="520"/>
+
+<text class="th" x="24" y="32">서브쿼리 두 가지 — 먼저 값 하나 vs 행마다 확인</text>
+<text class="ts" x="24" y="54">초기 상태 실측 · 파란 상자 = 서브쿼리 코드 · 초록 = 통과 · 빨강 = 탈락</text>
+
+<!-- 왼쪽: 스칼라 서브쿼리 Q12 -->
+<text class="tb c-blue" x="24" y="84">① 스칼라 서브쿼리 (Q12)</text>
+<rect class="blue" x="24" y="96" width="400" height="60" rx="8"/>
+<text class="mono" x="40" y="120">(SELECT AVG(price) FROM menu</text>
+<text class="mono" x="40" y="142">  WHERE is_available = 1)</text>
+<text class="ts" x="410" y="120" text-anchor="end">괄호 안 먼저</text>
+<text class="ts" x="410" y="142" text-anchor="end">한 번만 계산</text>
+<line class="ln ln-blue" x1="224" y1="157" x2="224" y2="172" marker-end="url(#arrow-blue)"/>
+<rect class="purple" x="104" y="176" width="240" height="34" rx="17"/>
+<text class="tb c-purple" x="224" y="198" text-anchor="middle">= 5,181.8 (값 하나)</text>
+<line class="ln ln-blue" x1="224" y1="211" x2="224" y2="226" marker-end="url(#arrow-blue)"/>
+<rect class="box" x="24" y="230" width="400" height="40" rx="8"/>
+<text class="mono" x="40" y="255">WHERE price &gt; 5181.8</text>
+<text class="ts" x="410" y="255" text-anchor="end">판매 중 11개와 비교</text>
+
+<rect class="zone" x="24" y="286" width="400" height="126" rx="10"/>
+<text class="ts tb c-green" x="40" y="310">✓ 치킨샐러드 8500 · 티라미수 6500</text>
+<text class="ts tb c-green" x="40" y="332">✓ 딸기스무디 6000 · 자몽에이드 5500</text>
+<text class="ts c-muted" x="40" y="358">✗ 바닐라라떼 5000 · 초콜릿라떼 5000</text>
+<text class="ts c-muted" x="40" y="380">✗ 카페라떼 4500 · 크로와상 4500 · 녹차 4000</text>
+<text class="ts c-muted" x="40" y="402">✗ 얼그레이 4000 · 아메리카노 3500</text>
+
+<rect class="green" x="24" y="428" width="400" height="36" rx="10"/>
+<text class="tb c-green" x="224" y="451" text-anchor="middle">결과 4행</text>
+
+<!-- 오른쪽: 상관 서브쿼리 EXISTS (1-c) -->
+<text class="tb c-blue" x="456" y="84">② 상관 서브쿼리 EXISTS (1-c)</text>
+<rect class="blue" x="456" y="96" width="400" height="60" rx="8"/>
+<text class="mono" x="472" y="120">WHERE EXISTS (… oh.customer_id = c.id</text>
+<text class="mono" x="472" y="142">         AND m.name = '아메리카노')</text>
+<text class="ts" x="656" y="180" text-anchor="middle">바깥 고객마다 괄호 안을 확인 · 하나 찾으면 멈춤</text>
+
+<rect class="green" x="456" y="194" width="400" height="34" rx="8"/>
+<text class="tb" x="472" y="216">김민준</text>
+<text class="ts" x="536" y="216">주문 1 에서 발견, 2·12 는 안 봄</text>
+<text class="tb c-green" x="842" y="216" text-anchor="end">✓ 통과</text>
+<rect class="green" x="456" y="236" width="400" height="34" rx="8"/>
+<text class="tb" x="472" y="258">이서연</text>
+<text class="ts" x="536" y="258">주문 3 없음 → 주문 9 에서 발견</text>
+<text class="tb c-green" x="842" y="258" text-anchor="end">✓ 통과</text>
+<rect class="green" x="456" y="278" width="400" height="34" rx="8"/>
+<text class="tb" x="472" y="300">박지호</text>
+<text class="ts" x="536" y="300">주문 4 에서 발견 (취소 주문)</text>
+<text class="tb c-green" x="842" y="300" text-anchor="end">✓ 통과</text>
+<rect class="red" x="456" y="320" width="400" height="34" rx="8"/>
+<text class="tb" x="472" y="342">최예린</text>
+<text class="ts" x="536" y="342">주문 5 에 없음 → 더 없음</text>
+<text class="tb c-red" x="842" y="342" text-anchor="end">✗ 탈락</text>
+<rect class="red" x="456" y="362" width="400" height="34" rx="8"/>
+<text class="tb" x="472" y="384">서지안</text>
+<text class="ts" x="536" y="384">주문이 하나도 없음</text>
+<text class="tb c-red" x="842" y="384" text-anchor="end">✗ 탈락</text>
+<text class="ts" x="656" y="416" text-anchor="middle">나머지 5명도 같은 방식 (정우진만 통과)</text>
+
+<rect class="green" x="456" y="428" width="400" height="36" rx="10"/>
+<text class="tb c-green" x="656" y="451" text-anchor="middle">결과 4행 · 김민준 · 이서연 · 박지호 · 정우진</text>
+
+<text class="ts" x="24" y="496">코드: 03_queries.sql:257-261 (Q12) · 04_bonus.sql:62-72 (1-c) · 결과: results/results.txt:279-288, results/bonus_results.txt:40-49</text>
+</svg>

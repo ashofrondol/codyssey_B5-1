@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="470" viewBox="0 0 880 470" role="img" aria-labelledby="title desc">
+<title id="title">카페 주문 DB 과제의 전체 구조</title>
+<desc id="desc">제출 SQL 파일 네 개가 ①01_schema → ②02_data → ③04_bonus → ④03_queries 순서로 build_and_capture.py 에 의해 실행되어 cafe.db 와 결과 텍스트 두 개를 만든다. 스크립트는 검사 59건이 모두 통과하면 종료 코드 0, 하나라도 어긋나면 [FAIL] 과 함께 종료 코드 1 을 낸다. drill 과 study 폴더는 학습 자료로 제출물이 아니며, drill 은 주석만 뺀 사본인지 검사만 받는다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="880" height="470"/>
+<text class="th" x="24" y="36">카페 주문 DB 과제의 전체 구조</text>
+<text class="ts" x="24" y="58">①→④ 순서로 실행 · 파랑 = 입력 흐름, 보라 = 만들어지는 파일 · 점선 = 검사만 하고 제출물 아님 / 실패 경로</text>
+
+<!-- 왼쪽: 제출 SQL 파일 -->
+<rect class="zone" x="24" y="76" width="236" height="264" rx="12"/>
+<text class="ts" x="38" y="96">제출 SQL 파일</text>
+
+<rect class="box" x="36" y="106" width="212" height="50" rx="8"/>
+<text x="50" y="127" class="mono tb">① 01_schema.sql</text>
+<text x="50" y="146" class="ts">테이블 5개 · PK · FK · 제약</text>
+
+<rect class="box" x="36" y="164" width="212" height="50" rx="8"/>
+<text x="50" y="185" class="mono tb">② 02_data.sql</text>
+<text x="50" y="204" class="ts">샘플 64행 (부모 → 자식)</text>
+
+<rect class="box" x="36" y="222" width="212" height="50" rx="8"/>
+<text x="50" y="243" class="mono tb">③ 04_bonus.sql</text>
+<text x="50" y="262" class="ts">보너스 3종 · 먼저 실행</text>
+
+<rect class="box" x="36" y="280" width="212" height="50" rx="8"/>
+<text x="50" y="301" class="mono tb">④ 03_queries.sql</text>
+<text x="50" y="320" class="ts">핵심 15 + 대조 7 · 나중 실행</text>
+
+<!-- 파일 → 스크립트 (blue) -->
+<line class="ln ln-blue" x1="248" y1="131" x2="276" y2="131"/>
+<line class="ln ln-blue" x1="248" y1="189" x2="276" y2="189"/>
+<line class="ln ln-blue" x1="248" y1="247" x2="276" y2="247"/>
+<line class="ln ln-blue" x1="248" y1="305" x2="276" y2="305"/>
+<line class="ln ln-blue" x1="276" y1="131" x2="276" y2="305"/>
+<line class="ln ln-blue" x1="276" y1="184" x2="300" y2="184" marker-end="url(#arrow-blue)"/>
+
+<!-- 가운데: 스크립트 -->
+<rect class="blue" x="304" y="154" width="220" height="60" rx="10"/>
+<text x="414" y="179" text-anchor="middle" class="mono tb c-blue">build_and_capture.py</text>
+<text x="414" y="200" text-anchor="middle" class="ts">빌드 → 캡처 → 검사</text>
+
+<!-- 스크립트 → 산출물 (purple) -->
+<line class="ln ln-purple" x1="526" y1="176" x2="597" y2="114" marker-end="url(#arrow-purple)"/>
+<line class="ln ln-purple" x1="526" y1="184" x2="596" y2="184" marker-end="url(#arrow-purple)"/>
+<line class="ln ln-purple" x1="526" y1="192" x2="597" y2="246" marker-end="url(#arrow-purple)"/>
+
+<!-- 오른쪽: 산출물 -->
+<rect class="purple" x="600" y="76" width="256" height="72" rx="10"/>
+<text x="614" y="99" class="mono tb c-purple">cafe.db</text>
+<text x="614" y="119" class="ts">SQLite 파일 1개</text>
+<text x="614" y="138" class="ts">최종: 주문 10 · 상세 18</text>
+
+<rect class="purple" x="600" y="158" width="256" height="52" rx="10"/>
+<text x="614" y="179" class="mono tb c-purple">results/bonus_results.txt</text>
+<text x="614" y="199" class="ts">보너스 결과 + 에러 4건</text>
+
+<rect class="purple" x="600" y="220" width="256" height="52" rx="10"/>
+<text x="614" y="241" class="mono tb c-purple">results/results.txt</text>
+<text x="614" y="261" class="ts">쿼리 결과 22블록</text>
+
+<!-- 스크립트 아래 두 갈래 -->
+<line class="ln ln-green" x1="360" y1="214" x2="360" y2="280" marker-end="url(#arrow-green)"/>
+<path class="ln ln-red dash" d="M492,214 L492,248 L536,248 L536,280" marker-end="url(#arrow-red)"/>
+
+<rect class="green" x="284" y="284" width="148" height="56" rx="10"/>
+<text x="358" y="307" text-anchor="middle" class="tb c-green">검사 59건 통과</text>
+<text x="358" y="327" text-anchor="middle" class="ts">→ 종료 코드 0</text>
+
+<rect class="red dash" x="452" y="284" width="172" height="56" rx="10"/>
+<text x="538" y="307" text-anchor="middle" class="tb c-red">하나라도 어긋나면</text>
+<text x="538" y="327" text-anchor="middle" class="ts">[FAIL] → 종료 코드 1</text>
+
+<!-- 아래: 학습 자료 -->
+<rect class="zone" x="24" y="366" width="832" height="82" rx="12"/>
+<text class="ts" x="40" y="398">학습 자료</text>
+<text class="ts" x="40" y="417">(제출 범위 밖)</text>
+
+<rect class="box" x="332" y="386" width="216" height="50" rx="8"/>
+<text x="440" y="406" text-anchor="middle" class="mono">drill/*_naked.sql</text>
+<text x="440" y="425" text-anchor="middle" class="ts">주석 제거본 · SQL 동일성 검사</text>
+
+<rect class="box" x="600" y="386" width="220" height="50" rx="8"/>
+<text x="710" y="406" text-anchor="middle" class="mono">study/*.md</text>
+<text x="710" y="425" text-anchor="middle" class="ts">피드백 8개 대응 모듈 7개</text>
+
+<line class="ln dash" x1="440" y1="386" x2="440" y2="218" marker-end="url(#arrow)"/>
+<text x="450" y="360" class="ts">검사 대상 (점선)</text>
+
+</svg>

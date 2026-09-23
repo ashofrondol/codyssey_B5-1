@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="476" viewBox="0 0 860 476" role="img" aria-labelledby="title desc">
+<title id="title">펼친 20행을 고객별 바구니로 접기 (Q10)</title>
+<desc id="desc">Q10 은 고객 10명을 주문·상세와 조인해 20행으로 펼친 뒤 GROUP BY 로 다시 10행으로 접는다. 김민준의 6행은 한 바구니에 모여 SUM 42500 이 되고, 주문이 없는 서지안은 NULL 로 채운 1행뿐이라 SUM 이 NULL 이어서 COALESCE 가 0 으로 바꾼다. 같은 NULL 행을 COUNT(*) 는 1 로, COUNT(oh.id) 는 0 으로 센다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="860" height="476"/>
+<text class="th" x="24" y="36">펼친 20행을 고객별 바구니로 접기 (Q10)</text>
+<text class="ts" x="24" y="58">전체: customer 10 → 조인 20행 → GROUP BY 10행 · 아래는 그중 두 사람</text>
+<text class="tb" x="24" y="92">조인 후 행 (김민준 6행)</text>
+<rect class="box" x="24" y="102" width="320" height="28" rx="6"/>
+<text class="mono" x="36" y="121">주문 1 · 아메리카노 2 × 3500 = 7000</text>
+<rect class="box" x="24" y="134" width="320" height="28" rx="6"/>
+<text class="mono" x="36" y="153">주문 1 · 크로와상 1 × 4500 = 4500</text>
+<rect class="box" x="24" y="166" width="320" height="28" rx="6"/>
+<text class="mono" x="36" y="185">주문 2 · 카페라떼 1 × 4500 = 4500</text>
+<rect class="box" x="24" y="198" width="320" height="28" rx="6"/>
+<text class="mono" x="36" y="217">주문 2 · 티라미수 1 × 6500 = 6500</text>
+<rect class="box" x="24" y="230" width="320" height="28" rx="6"/>
+<text class="mono" x="36" y="249">주문 12 · 아메리카노 2 × 3500 = 7000</text>
+<rect class="box" x="24" y="262" width="320" height="28" rx="6"/>
+<text class="mono" x="36" y="281">주문 12 · 티라미수 2 × 6500 = 13000</text>
+<text class="tb" x="24" y="322">서지안 1행</text>
+<rect class="orange" x="24" y="332" width="320" height="28" rx="6"/>
+<text class="mono" x="36" y="351">주문 NULL · 상세 NULL</text>
+<path class="ln ln-blue" d="M348,104 L358,104 L358,288 L348,288"/>
+<line class="ln ln-blue" x1="358" y1="196" x2="516" y2="196" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="348" y1="346" x2="516" y2="346" marker-end="url(#arrow-blue)"/>
+<rect class="bg" x="368" y="172" width="128" height="48" rx="0"/>
+<rect class="blue" x="368" y="172" width="128" height="48" rx="8"/>
+<text class="mono c-blue" x="432" y="192" text-anchor="middle">GROUP BY</text>
+<text class="mono c-blue" x="432" y="211" text-anchor="middle">c.id, c.name</text>
+<text class="ts" x="432" y="338" text-anchor="middle">접기</text>
+<rect class="green" x="520" y="148" width="316" height="96" rx="12"/>
+<text class="tb c-green" x="536" y="174">김민준 바구니</text>
+<text class="mono" x="536" y="198">7000+4500+4500+6500+7000+13000</text>
+<text class="mono tb" x="536" y="226">SUM = 42500</text>
+<rect class="green" x="520" y="306" width="316" height="80" rx="12"/>
+<text class="tb c-green" x="536" y="332">서지안 바구니</text>
+<text class="mono" x="536" y="362">SUM = <tspan class="c-orange">NULL</tspan> → COALESCE → 0</text>
+<text class="ts" x="424" y="422">Q7-B 실측 · 서지안 (행을 세나, 값을 세나)</text>
+<rect class="box" x="424" y="432" width="96" height="32" rx="6"/>
+<text x="472" y="453" text-anchor="middle">서지안</text>
+<rect class="orange" x="528" y="432" width="140" height="32" rx="6"/>
+<text class="mono" x="598" y="453" text-anchor="middle">COUNT(*) = 1</text>
+<rect class="green" x="676" y="432" width="160" height="32" rx="6"/>
+<text class="mono" x="756" y="453" text-anchor="middle">COUNT(oh.id) = 0</text>
+</svg>

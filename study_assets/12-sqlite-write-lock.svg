@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="600" viewBox="0 0 880 600" role="img" aria-labelledby="title desc">
+<title id="title">SQLite 쓰기 잠금 — 연결 A 가 쓰는 동안 연결 B 의 다른 행 쓰기가 막힌다</title>
+<desc id="desc">연결 A 가 BEGIN 후 아메리카노 가격을 9999 로 바꾸고 확정하지 않은 동안 파일 전체에 쓰기 잠금이 걸린다. 그 사이 연결 B 는 옛 값 3500 을 읽을 수는 있지만 다른 행인 녹차의 UPDATE 는 database is locked 로 거부된다. A 가 ROLLBACK 해 잠금이 풀린 뒤에는 B 의 UPDATE 가 성공한다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="880" height="600"/>
+<text class="th" x="24" y="36">SQLite 쓰기 잠금 — 다른 행을 고쳐도 기다린다</text>
+<text class="ts" x="24" y="58">위에서 아래로 시간이 흐른다 · 두 연결이 같은 DB 파일 하나를 연다</text>
+<text class="th" x="240" y="104" text-anchor="middle">연결 A</text>
+<text class="th" x="640" y="104" text-anchor="middle">연결 B</text>
+<rect class="yellow" x="48" y="200" width="784" height="268" rx="8"/>
+<text class="ts" x="24" y="124">시간</text>
+<line class="ln" x1="36" y1="134" x2="36" y2="548" marker-end="url(#arrow)"/>
+<rect class="box" x="80" y="128" width="320" height="52" rx="10"/>
+<text class="tb" x="96" y="150">① BEGIN</text>
+<text class="ts" x="96" y="171">트랜잭션 시작</text>
+
+<rect class="box" x="80" y="208" width="320" height="52" rx="10"/>
+<text class="tb" x="96" y="230">② UPDATE 아메리카노 → 9999</text>
+<text class="ts" x="96" y="251">확정 전 · 이때 파일 쓰기 잠금을 잡는다</text>
+
+<rect class="green" x="480" y="276" width="320" height="52" rx="10"/>
+<text class="tb c-green" x="496" y="298">③ SELECT 아메리카노 가격</text>
+<text class="ts" x="496" y="319">→ 3500 (옛 값) · 읽기는 된다</text>
+
+<rect class="red" x="480" y="344" width="320" height="52" rx="10"/>
+<text class="tb c-red" x="496" y="366">④ UPDATE 녹차 가격 (다른 행)</text>
+<text class="mono c-red" x="496" y="387">database is locked</text>
+
+<rect class="box" x="80" y="408" width="320" height="52" rx="10"/>
+<text class="tb" x="96" y="430">⑤ ROLLBACK</text>
+<text class="ts" x="96" y="451">변경 취소 · 잠금 해제</text>
+
+<rect class="green" x="480" y="488" width="320" height="52" rx="10"/>
+<text class="tb c-green" x="496" y="510">⑥ UPDATE 녹차 가격 (다시)</text>
+<text class="ts" x="496" y="531">성공 · 이제 잠금이 없다</text>
+
+<text class="tb" x="240" y="330" text-anchor="middle">노란 띠 = A 가 쥔 쓰기 잠금</text>
+<text class="ts" x="240" y="352" text-anchor="middle">이 동안 B 는 읽기만 된다</text>
+<text class="ts" x="24" y="584">초기 상태 복사본(fresh.db) 실측 · journal_mode = delete · 초록 = 성공 · 빨강 = 거부</text>
+</svg>

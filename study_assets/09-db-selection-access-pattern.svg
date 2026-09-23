@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="480" viewBox="0 0 880 480" role="img" aria-labelledby="title desc">
+<title id="title">DB 는 이름이 아니라 접근 패턴으로 고른다</title>
+<desc id="desc">왼쪽의 질문(어떻게 읽고 쓰나)이 가운데의 필요한 자료구조를 정하고, 그 자료구조가 오른쪽의 후보 DB 를 정한다. 이 과제는 단일 프로세스·파일 하나·조인과 제약이 필요해 SQLite 를 쓰며, 동시 쓰기가 생기면 PostgreSQL 로 옮긴다(실측: 다른 행 UPDATE 도 database is locked).</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="880" height="480"/>
+
+<text x="24" y="36" class="tb">어떻게 읽고 쓰나 (질문)</text>
+<text x="332" y="36" class="tb c-purple">필요한 자료구조</text>
+<text x="592" y="36" class="tb c-green">후보 DB</text>
+
+<!-- 1 -->
+<rect class="box" x="24" y="52" width="272" height="50" rx="8"/>
+<text x="38" y="73">여러 행이 함께 성공·실패?</text>
+<text x="38" y="92" class="ts">돈·재고처럼 어긋나면 안 되는 값</text>
+<rect class="purple" x="332" y="52" width="224" height="50" rx="8"/>
+<text x="346" y="73">B+tree + 트랜잭션 + FK</text>
+<text x="346" y="92" class="ts">정렬 · 전부 아니면 전무</text>
+<rect class="green" x="592" y="52" width="264" height="50" rx="8"/>
+<text x="606" y="73">관계형 PostgreSQL · MySQL</text>
+<text x="606" y="92" class="ts">(단일 프로세스·파일 하나면 SQLite)</text>
+<line class="ln ln-blue" x1="296" y1="77" x2="328" y2="77" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="556" y1="77" x2="588" y2="77" marker-end="url(#arrow-blue)"/>
+
+<!-- 2 -->
+<rect class="box" x="24" y="114" width="272" height="50" rx="8"/>
+<text x="38" y="144">키 하나로 찍고 곧 사라지는 값?</text>
+<rect class="purple" x="332" y="114" width="224" height="50" rx="8"/>
+<text x="346" y="135">해시 (O(1))</text>
+<text x="346" y="154" class="ts">키 → 바로 그 칸</text>
+<rect class="green" x="592" y="114" width="264" height="50" rx="8"/>
+<text x="606" y="144">Redis (대기번호 · 세션)</text>
+<line class="ln ln-blue" x1="296" y1="139" x2="328" y2="139" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="556" y1="139" x2="588" y2="139" marker-end="url(#arrow-blue)"/>
+
+<!-- 3 -->
+<rect class="box" x="24" y="176" width="272" height="50" rx="8"/>
+<text x="38" y="206">단어·부분일치 검색?</text>
+<rect class="purple" x="332" y="176" width="224" height="50" rx="8"/>
+<text x="346" y="197">역색인</text>
+<text x="346" y="216" class="ts">단어 → 그 단어가 든 문서 목록</text>
+<rect class="green" x="592" y="176" width="264" height="50" rx="8"/>
+<text x="606" y="206">Elasticsearch · SQLite FTS5</text>
+<line class="ln ln-blue" x1="296" y1="201" x2="328" y2="201" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="556" y1="201" x2="588" y2="201" marker-end="url(#arrow-blue)"/>
+
+<!-- 4 -->
+<rect class="box" x="24" y="238" width="272" height="50" rx="8"/>
+<text x="38" y="268">전 구간을 훑어 집계?</text>
+<rect class="purple" x="332" y="238" width="224" height="50" rx="8"/>
+<text x="346" y="259">열 저장</text>
+<text x="346" y="278" class="ts">같은 열끼리 모아 저장</text>
+<rect class="green" x="592" y="238" width="264" height="50" rx="8"/>
+<text x="606" y="268">DuckDB · ClickHouse</text>
+<line class="ln ln-blue" x1="296" y1="263" x2="328" y2="263" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="556" y1="263" x2="588" y2="263" marker-end="url(#arrow-blue)"/>
+
+<!-- 5 -->
+<rect class="box" x="24" y="300" width="272" height="50" rx="8"/>
+<text x="38" y="330">쓰기 폭주 + 키 범위 읽기?</text>
+<rect class="purple" x="332" y="300" width="224" height="50" rx="8"/>
+<text x="346" y="321">LSM 트리</text>
+<text x="346" y="340" class="ts">일단 쌓고 나중에 정리</text>
+<rect class="green" x="592" y="300" width="264" height="50" rx="8"/>
+<text x="606" y="330">Cassandra</text>
+<line class="ln ln-blue" x1="296" y1="325" x2="328" y2="325" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="556" y1="325" x2="588" y2="325" marker-end="url(#arrow-blue)"/>
+
+<!-- 하단: 이 과제와 한계 -->
+<rect class="blue" x="24" y="376" width="412" height="64" rx="10"/>
+<text x="40" y="401" class="tb c-blue">이 과제 → SQLite</text>
+<text x="40" y="424" class="ts">단일 프로세스 · 파일 하나로 재현 · 조인과 제약 필요</text>
+<rect class="orange" x="452" y="376" width="404" height="64" rx="10"/>
+<text x="468" y="401" class="tb c-orange">동시 쓰기가 생기면 → PostgreSQL</text>
+<text x="468" y="424" class="ts">실측: 다른 행 UPDATE 도 <tspan class="mono">database is locked</tspan></text>
+</svg>

@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="512" viewBox="0 0 880 512" role="img" aria-labelledby="title desc">
+<title id="title">Q8(INNER) 9행 vs Q8-B(LEFT) 10행</title>
+<desc id="desc">카테고리 10개 중 &#x27;굿즈&#x27;만 메뉴가 없다. INNER JOIN(Q8)은 짝 있는 12행만 만들어 GROUP BY 후 9행이 되고 굿즈가 사라진다. LEFT JOIN(Q8-B)은 굿즈를 NULL 과 짝지은 1행을 더해 13행, GROUP BY 후 10행이 되고 COUNT(m.id) 로 굿즈가 0 으로 세어진다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="880" height="512"/>
+<text class="th" x="24" y="36">Q8(INNER) 9행 vs Q8-B(LEFT) 10행</text>
+<text class="ts" x="24" y="58">같은 질문 &quot;카테고리마다 메뉴가 몇 개?&quot; · 조인 종류만 바꿨다</text>
+<rect class="zone" x="16" y="70" width="444" height="382" rx="12"/>
+<text class="tb c-purple" x="32" y="94">category (10)</text>
+<text class="tb c-purple" x="192" y="94">menu (12)</text>
+<rect class="purple" x="32" y="106" width="112" height="30" rx="6"/>
+<text x="88" y="126" text-anchor="middle">커피</text>
+<line class="ln " x1="144" y1="121" x2="190" y2="121"/>
+<rect class="purple" x="192" y="106" width="254" height="30" rx="6"/>
+<text x="206" y="126">아메리카노 · 카페라떼 · 바닐라라떼</text>
+<rect class="purple" x="32" y="140" width="112" height="30" rx="6"/>
+<text x="88" y="160" text-anchor="middle">논커피</text>
+<line class="ln " x1="144" y1="155" x2="190" y2="155"/>
+<rect class="purple" x="192" y="140" width="254" height="30" rx="6"/>
+<text x="206" y="160">초콜릿라떼</text>
+<rect class="purple" x="32" y="174" width="112" height="30" rx="6"/>
+<text x="88" y="194" text-anchor="middle">티</text>
+<line class="ln " x1="144" y1="189" x2="190" y2="189"/>
+<rect class="purple" x="192" y="174" width="254" height="30" rx="6"/>
+<text x="206" y="194">녹차 · 얼그레이</text>
+<rect class="purple" x="32" y="208" width="112" height="30" rx="6"/>
+<text x="88" y="228" text-anchor="middle">스무디</text>
+<line class="ln " x1="144" y1="223" x2="190" y2="223"/>
+<rect class="purple" x="192" y="208" width="254" height="30" rx="6"/>
+<text x="206" y="228">딸기스무디</text>
+<rect class="purple" x="32" y="242" width="112" height="30" rx="6"/>
+<text x="88" y="262" text-anchor="middle">에이드</text>
+<line class="ln " x1="144" y1="257" x2="190" y2="257"/>
+<rect class="purple" x="192" y="242" width="254" height="30" rx="6"/>
+<text x="206" y="262">자몽에이드</text>
+<rect class="purple" x="32" y="276" width="112" height="30" rx="6"/>
+<text x="88" y="296" text-anchor="middle">베이커리</text>
+<line class="ln " x1="144" y1="291" x2="190" y2="291"/>
+<rect class="purple" x="192" y="276" width="254" height="30" rx="6"/>
+<text x="206" y="296">크로와상</text>
+<rect class="purple" x="32" y="310" width="112" height="30" rx="6"/>
+<text x="88" y="330" text-anchor="middle">디저트</text>
+<line class="ln " x1="144" y1="325" x2="190" y2="325"/>
+<rect class="purple" x="192" y="310" width="254" height="30" rx="6"/>
+<text x="206" y="330">티라미수</text>
+<rect class="purple" x="32" y="344" width="112" height="30" rx="6"/>
+<text x="88" y="364" text-anchor="middle">샌드위치</text>
+<line class="ln " x1="144" y1="359" x2="190" y2="359"/>
+<rect class="purple" x="192" y="344" width="254" height="30" rx="6"/>
+<text x="206" y="364">에그샌드위치</text>
+<rect class="purple" x="32" y="378" width="112" height="30" rx="6"/>
+<text x="88" y="398" text-anchor="middle">샐러드</text>
+<line class="ln " x1="144" y1="393" x2="190" y2="393"/>
+<rect class="purple" x="192" y="378" width="254" height="30" rx="6"/>
+<text x="206" y="398">치킨샐러드</text>
+<rect class="yellow" x="32" y="412" width="112" height="30" rx="6"/>
+<text class="tb" x="88" y="432" text-anchor="middle">굿즈</text>
+<line class="ln dash" x1="144" y1="427" x2="190" y2="427"/>
+<rect class="box dash" x="192" y="412" width="96" height="30" rx="6"/>
+<text class="mono c-muted" x="240" y="432" text-anchor="middle">NULL</text>
+<text class="ts" x="300" y="432">← 짝 없음</text>
+<rect class="box" x="488" y="84" width="368" height="150" rx="12"/>
+<text class="th" x="504" y="112">INNER JOIN · Q8</text>
+<text class="mono" x="504" y="136">INNER JOIN menu m ON m.category_id = c.id</text>
+<text x="504" y="164">조인 12행 → GROUP BY 9행</text>
+<rect class="red" x="504" y="180" width="336" height="34" rx="8"/>
+<text class="tb c-red" x="672" y="202" text-anchor="middle">굿즈 소멸 (결과에 줄이 없다)</text>
+<rect class="box" x="488" y="282" width="368" height="150" rx="12"/>
+<text class="th" x="504" y="310">LEFT JOIN · Q8-B</text>
+<text class="mono" x="504" y="334">LEFT  JOIN menu m ON m.category_id = c.id</text>
+<text x="504" y="362">조인 13행 → GROUP BY 10행</text>
+<rect class="green" x="504" y="378" width="336" height="34" rx="8"/>
+<text class="tb c-green" x="672" y="400" text-anchor="middle">굿즈 menu_count = 0 으로 남는다</text>
+<line class="ln ln-blue" x1="461" y1="159" x2="484" y2="159" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="461" y1="357" x2="484" y2="357" marker-end="url(#arrow-blue)"/>
+<rect class="orange" x="24" y="466" width="832" height="34" rx="8"/>
+<text class="tb c-orange" x="440" y="488" text-anchor="middle">COUNT(*) 로 세면 굿즈도 1 (NULL 로 채운 행도 한 행) → COUNT(m.id) 를 쓴다</text>
+</svg>

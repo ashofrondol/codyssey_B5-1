@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="500" viewBox="0 0 880 500" role="img" aria-labelledby="title desc">
+<title id="title">INSERT 한 줄이 통과하는 관문 4개</title>
+<desc id="desc">INSERT 한 줄은 NOT NULL, CHECK, UNIQUE, FK 관문을 차례로 통과해야 저장된다. CHECK 는 식이 FALSE 일 때만 거부하므로 NULL 로 UNKNOWN 이 되면 통과한다. 어느 관문에서든 걸리면 그 문장 전체가 취소되고 sqlite3.IntegrityError 가 난다(예: status=&#x27;DONE&#x27; 은 CHECK 에서 코드 275).</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="880" height="500"/>
+<text class="th" x="24" y="36">INSERT 한 줄이 통과하는 관문 4개</text>
+<text class="ts" x="24" y="58">왼쪽부터 차례로 검사 · 하나라도 걸리면 빨간 점선으로 빠져 저장되지 않는다</text>
+<rect class="blue" x="24" y="72" width="580" height="36" rx="8"/>
+<text class="mono" x="38" y="95">INSERT INTO order_header (customer_id, status) VALUES (1, &#x27;DONE&#x27;)</text>
+<line class="ln ln-blue" x1="102" y1="108" x2="102" y2="132" marker-end="url(#arrow-blue)"/>
+<rect class="box" x="24" y="136" width="156" height="68" rx="10"/>
+<text class="tb" x="102.0" y="164" text-anchor="middle">① NOT NULL</text>
+<text class="ts" x="102.0" y="187" text-anchor="middle">값이 비었나?</text>
+<rect class="box" x="206" y="136" width="156" height="68" rx="10"/>
+<text class="tb" x="284.0" y="164" text-anchor="middle">② CHECK</text>
+<text class="ts" x="284.0" y="187" text-anchor="middle">식이 FALSE 인가?</text>
+<rect class="box" x="388" y="136" width="156" height="68" rx="10"/>
+<text class="tb" x="466.0" y="164" text-anchor="middle">③ UNIQUE</text>
+<text class="ts" x="466.0" y="187" text-anchor="middle">자동 인덱스에 같은 값?</text>
+<rect class="box" x="570" y="136" width="156" height="68" rx="10"/>
+<text class="tb" x="648.0" y="164" text-anchor="middle">④ FK</text>
+<text class="ts" x="648.0" y="187" text-anchor="middle">부모 행이 있나?</text>
+<line class="ln ln-blue" x1="181" y1="170" x2="202" y2="170" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="363" y1="170" x2="384" y2="170" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="545" y1="170" x2="566" y2="170" marker-end="url(#arrow-blue)"/>
+<line class="ln ln-blue" x1="727" y1="170" x2="748" y2="170" marker-end="url(#arrow-blue)"/>
+<rect class="green" x="752" y="136" width="104" height="68" rx="10"/>
+<text class="tb c-green" x="804" y="164" text-anchor="middle">행 저장</text>
+<text class="ts" x="804" y="187" text-anchor="middle">모두 통과</text>
+<text class="ts c-orange" x="612" y="228">PRAGMA foreign_keys = ON</text>
+<text class="ts c-orange" x="612" y="246">일 때만 검사한다</text>
+<line class="ln " x1="284" y1="204" x2="284" y2="226"/>
+<rect class="zone" x="198" y="226" width="240" height="106" rx="8"/>
+<text class="tb c-green" x="214" y="250">TRUE → 통과</text>
+<text class="tb c-orange" x="214" y="274">UNKNOWN (NULL) → 통과</text>
+<text class="ts c-orange" x="230" y="294">↳ 그래서 NOT NULL 을 같이 건다</text>
+<text class="tb c-red" x="214" y="320">FALSE → 거부</text>
+<text class="ts c-red" x="318" y="320">← &#x27;DONE&#x27; 은 여기</text>
+<rect class="red" x="56" y="364" width="628" height="104" rx="10"/>
+<text class="tb c-red" x="72" y="388">문장 전체 취소 · 트랜잭션은 유지</text>
+<text class="mono" x="72" y="412">sqlite3.IntegrityError</text>
+<text class="mono" x="72" y="434">CHECK constraint failed: status IN (&#x27;PENDING&#x27;,&#x27;COMPLETED&#x27;,&#x27;CANCELLED&#x27;)</text>
+<text class="mono" x="72" y="456">SQLITE_CONSTRAINT_CHECK (275)</text>
+<path class="ln ln-red dash" d="M60,204 L60,360" marker-end="url(#arrow-red)"/>
+<line class="ln ln-red dash" x1="296" y1="332" x2="296" y2="360" marker-end="url(#arrow-red)"/>
+<line class="ln ln-red dash" x1="474" y1="204" x2="474" y2="360" marker-end="url(#arrow-red)"/>
+<line class="ln ln-red dash" x1="592" y1="204" x2="592" y2="360" marker-end="url(#arrow-red)"/>
+<line class="ln ln-red dash" x1="704" y1="396" x2="740" y2="396"/>
+<text class="ts" x="748" y="401">점선 = 실패 경로</text>
+<text class="ts" x="24" y="490">실측 순서(SQLite 3.46.1): NOT NULL → CHECK → UNIQUE → FK · 에러 코드 1299 / 275 / 2067 / 787</text>
+</svg>

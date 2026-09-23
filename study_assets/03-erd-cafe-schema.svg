@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="520" viewBox="0 0 880 520" role="img" aria-labelledby="title desc">
+<title id="title">카페 주문 DB 의 5개 테이블과 FK</title>
+<desc id="desc">customer, order_header, order_detail, menu, category 다섯 테이블의 PK·FK·제약과 01+02 실행 직후 행 수를 보여 준다. 화살표는 자식 테이블의 FK 에서 부모 테이블의 PK 로 향하며 모두 N:1 이다. 주문 헤더에서 상세로 가는 관계만 ON DELETE CASCADE 이고 나머지 세 관계는 NO ACTION 이라 자식이 있는 부모는 삭제가 거부된다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="880" height="520"/>
+<text class="th" x="24" y="36">카페 주문 DB 의 5개 테이블과 FK</text>
+<text class="ts" x="24" y="58">행 수는 01_schema.sql + 02_data.sql 직후 기준 (합계 64행) · 굵은 줄 = PK / FK</text>
+<rect class="purple" x="24" y="84" width="200" height="148" rx="8"/>
+<line class="ln ln-purple" x1="24" y1="114" x2="224" y2="114"/>
+<text class="mono tb c-purple" x="36" y="104">customer</text>
+<text class="ts" x="212" y="104" text-anchor="end">10행</text>
+<text class="mono tb" x="36" y="131">id PK</text>
+<text class="mono" x="36" y="153">name NOT NULL</text>
+<text class="mono" x="36" y="175">email NOT NULL UNIQUE</text>
+<text class="mono" x="36" y="197">phone (NULL 허용)</text>
+<text class="mono" x="36" y="219">joined_at DATE</text>
+<rect class="purple" x="336" y="84" width="198" height="126" rx="8"/>
+<line class="ln ln-purple" x1="336" y1="114" x2="534" y2="114"/>
+<text class="mono tb c-purple" x="348" y="104">order_header</text>
+<text class="ts" x="522" y="104" text-anchor="end">12행</text>
+<text class="mono tb" x="348" y="131">id PK</text>
+<text class="mono tb" x="348" y="153">customer_id FK</text>
+<text class="mono" x="348" y="175">order_date DATETIME</text>
+<text class="mono" x="348" y="197">status CHECK IN (...)</text>
+<rect class="purple" x="656" y="84" width="200" height="148" rx="8"/>
+<line class="ln ln-purple" x1="656" y1="114" x2="856" y2="114"/>
+<text class="mono tb c-purple" x="668" y="104">order_detail</text>
+<text class="ts" x="844" y="104" text-anchor="end">20행</text>
+<text class="mono tb" x="668" y="131">id PK</text>
+<text class="mono tb" x="668" y="153">order_id FK</text>
+<text class="mono tb" x="668" y="175">menu_id FK</text>
+<text class="mono" x="668" y="197">quantity CHECK > 0</text>
+<text class="mono" x="668" y="219">unit_price CHECK >= 0</text>
+<rect class="purple" x="336" y="320" width="198" height="82" rx="8"/>
+<line class="ln ln-purple" x1="336" y1="350" x2="534" y2="350"/>
+<text class="mono tb c-purple" x="348" y="340">category</text>
+<text class="ts" x="522" y="340" text-anchor="end">10행</text>
+<text class="mono tb" x="348" y="367">id PK</text>
+<text class="mono" x="348" y="389">name NOT NULL UNIQUE</text>
+<rect class="purple" x="608" y="320" width="248" height="148" rx="8"/>
+<line class="ln ln-purple" x1="608" y1="350" x2="856" y2="350"/>
+<text class="mono tb c-purple" x="620" y="340">menu</text>
+<text class="ts" x="844" y="340" text-anchor="end">12행</text>
+<text class="mono tb" x="620" y="367">id PK</text>
+<text class="mono" x="620" y="389">name NOT NULL UNIQUE</text>
+<text class="mono" x="620" y="411">price CHECK >= 0</text>
+<text class="mono tb" x="620" y="433">category_id FK</text>
+<text class="mono" x="620" y="455">is_available CHECK IN (0,1)</text>
+<path class="ln" d="M336,147 H280 V125 H228" marker-end="url(#arrow)"/>
+<text class="ts tb" x="280" y="178" text-anchor="middle">N : 1</text>
+<text class="ts" x="280" y="196" text-anchor="middle">NO ACTION</text>
+<path class="ln ln-red" d="M656,147 H595 V125 H538" marker-end="url(#arrow-red)"/>
+<text class="ts tb c-red" x="595" y="178" text-anchor="middle">N : 1</text>
+<text class="ts tb c-red" x="595" y="196" text-anchor="middle">CASCADE</text>
+<line class="ln" x1="756" y1="232" x2="756" y2="316" marker-end="url(#arrow)"/>
+<rect class="bg" x="688" y="259" width="136" height="28"/>
+<text class="ts" x="756" y="279" text-anchor="middle"><tspan class="tb">N : 1</tspan> · NO ACTION</text>
+<path class="ln" d="M608,427 H571 V361 H538" marker-end="url(#arrow)"/>
+<text class="ts tb" x="560" y="452" text-anchor="end">N : 1</text>
+<text class="ts" x="560" y="470" text-anchor="end">NO ACTION</text>
+<text class="ts c-orange" x="24" y="256">서지안: 주문 0건</text>
+<text class="ts c-orange" x="336" y="428">굿즈: 메뉴 0개</text>
+<text class="ts c-orange" x="608" y="492">에그샌드위치: 품절 · 주문 0줄</text>
+<rect class="zone" x="24" y="300" width="286" height="196" rx="10"/>
+<text class="ts tb" x="38" y="322">읽는 법</text>
+<line class="ln" x1="38" y1="344" x2="74" y2="344" marker-end="url(#arrow)"/>
+<text class="ts" x="84" y="349">자식의 FK 가 부모의 PK 를 가리킴</text>
+<line class="ln ln-red" x1="38" y1="382" x2="74" y2="382"/>
+<text class="ts" x="84" y="378">ON DELETE CASCADE</text>
+<text class="ts" x="84" y="396">부모 삭제 시 자식도 삭제</text>
+<line class="ln" x1="38" y1="428" x2="74" y2="428"/>
+<text class="ts" x="84" y="424">NO ACTION</text>
+<text class="ts" x="84" y="442">자식이 있으면 부모 삭제 거부</text>
+<text class="ts" x="38" y="476"><tspan class="tb">N : 1</tspan> = 자식 → 부모 방향으로 읽음</text>
+</svg>

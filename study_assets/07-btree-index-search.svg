@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="544" viewBox="0 0 880 544" role="img" aria-labelledby="title desc">
+<title id="title">customer_id = 1 을 찾는 두 가지 길: SCAN vs 인덱스 SEARCH</title>
+<desc id="desc">인덱스가 없으면 order_header 12행을 모두 읽는다(SCAN). 인덱스 idx_order_header_customer_id 는 (customer_id, rowid) 쌍을 정렬해 둔 별도 B-tree 다. 루트에는 엔트리 (2,3)·(4,5)·(7,8) 이 직접 들어 있고 리프에 다시 나오지 않는다. 루트의 첫 엔트리와 비교해 첫 리프를 찾아 customer_id = 1 인 rowid 1, 2, 12 를 얻고 테이블에서 그 세 행만 읽는다(SEARCH). 아래에 100만 행 사본 실측치를 적었다.</desc>
+<style>
+  text{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Noto Sans CJK KR",sans-serif;font-size:15px;fill:#1D1F23}
+  .bg{fill:#FFFFFF}
+  .ts{font-size:13px;fill:#5B6069}
+  .th{font-size:17px;font-weight:700}
+  .tb{font-weight:700}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,"Noto Sans Mono CJK KR",monospace;font-size:13.5px}
+  .box{fill:#F4F3EF;stroke:#9A9CA3;stroke-width:1.5}
+  .zone{fill:#FAF9F6;stroke:#C9C6BE;stroke-width:1.2;stroke-dasharray:5 4}
+  .blue{fill:#E7EFF9;stroke:#1F5FAD;stroke-width:1.6}
+  .green{fill:#E6F4EC;stroke:#1B7F4B;stroke-width:1.6}
+  .orange{fill:#FCEFE0;stroke:#B25E09;stroke-width:1.6}
+  .red{fill:#FCEBEA;stroke:#B42318;stroke-width:1.6}
+  .purple{fill:#F1EAFB;stroke:#6E3FB0;stroke-width:1.6}
+  .yellow{fill:#FFF3C4;stroke:#A07800;stroke-width:1.6}
+  .c-blue{fill:#1F5FAD}.c-green{fill:#1B7F4B}.c-orange{fill:#B25E09}.c-red{fill:#B42318}.c-purple{fill:#6E3FB0}.c-muted{fill:#5B6069}
+  .ln{stroke:#6B7078;stroke-width:1.6;fill:none}
+  .ln-blue{stroke:#1F5FAD}.ln-green{stroke:#1B7F4B}.ln-red{stroke:#B42318}.ln-orange{stroke:#B25E09}.ln-purple{stroke:#6E3FB0}
+  .dash{stroke-dasharray:6 5}
+  .ah{fill:#6B7078}.ah-blue{fill:#1F5FAD}.ah-green{fill:#1B7F4B}.ah-red{fill:#B42318}.ah-orange{fill:#B25E09}.ah-purple{fill:#6E3FB0}
+  @media (prefers-color-scheme:dark){
+    text{fill:#E8E6E1}
+    .bg{fill:#1A1C20}
+    .ts{fill:#A9A69F}
+    .box{fill:#24262B;stroke:#6B6E76}
+    .zone{fill:#1F2125;stroke:#43464D}
+    .blue{fill:#1B2940;stroke:#7FB0F0}
+    .green{fill:#16281E;stroke:#5FC98E}
+    .orange{fill:#2E2215;stroke:#E8A05A}
+    .red{fill:#301A18;stroke:#F08A80}
+    .purple{fill:#251C33;stroke:#C3A0F0}
+    .yellow{fill:#2E2812;stroke:#E3C45C}
+    .c-blue{fill:#9CC4F5}.c-green{fill:#7ED3A3}.c-orange{fill:#EDB27A}.c-red{fill:#F4A39B}.c-purple{fill:#D2B8F4}.c-muted{fill:#A9A69F}
+    .ln{stroke:#8D9098}
+    .ln-blue{stroke:#7FB0F0}.ln-green{stroke:#5FC98E}.ln-red{stroke:#F08A80}.ln-orange{stroke:#E8A05A}.ln-purple{stroke:#C3A0F0}
+    .ah{fill:#8D9098}.ah-blue{fill:#7FB0F0}.ah-green{fill:#5FC98E}.ah-red{fill:#F08A80}.ah-orange{fill:#E8A05A}.ah-purple{fill:#C3A0F0}
+  }
+</style>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-blue" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-red" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-green" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-orange" d="M0,0 L10,5 L0,10 z"/></marker>
+  <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah-purple" d="M0,0 L10,5 L0,10 z"/></marker>
+</defs>
+<rect class="bg" x="0" y="0" width="880" height="544"/>
+
+<!-- 상단: 두 가지 실행계획 -->
+<rect class="orange" x="24" y="24" width="384" height="60" rx="10"/>
+<text x="40" y="59"><tspan class="tb c-orange">인덱스 없음:</tspan> <tspan class="mono">SCAN order_header</tspan> — 12행 전부 읽기</text>
+
+<rect class="green" x="424" y="24" width="432" height="60" rx="10"/>
+<text x="440" y="48"><tspan class="tb c-green">인덱스 있음:</tspan> <tspan class="mono">SEARCH order_header USING INDEX</tspan></text>
+<text x="440" y="72" class="mono">idx_order_header_customer_id (customer_id=?)</text>
+
+<!-- 인덱스 트리 -->
+<text x="24" y="116"><tspan class="tb c-purple">인덱스</tspan> <tspan class="mono">idx_order_header_customer_id</tspan> <tspan class="c-purple">(B-tree)</tspan></text>
+
+<text x="328" y="159" text-anchor="end" class="ts">루트</text>
+<rect class="purple" x="340" y="132" width="200" height="44" rx="8"/>
+<text x="440" y="159" text-anchor="middle" class="mono">(2,3) · (4,5) · (7,8)</text>
+
+<line class="ln" x1="420" y1="176" x2="333" y2="220"/>
+<line class="ln" x1="460" y1="176" x2="547" y2="220"/>
+<line class="ln" x1="500" y1="176" x2="761" y2="220"/>
+<line class="ln ln-blue" x1="380" y1="176" x2="122" y2="219" marker-end="url(#arrow-blue)"/>
+<rect class="bg" x="198" y="184" width="106" height="27"/>
+<text x="251" y="202" text-anchor="middle" class="ts c-blue">1 &lt; 2 → 왼쪽</text>
+
+<rect class="yellow" x="24" y="224" width="190" height="40" rx="8"/>
+<text x="119" y="249" text-anchor="middle" class="mono">(1,1) (1,2) (1,12)</text>
+<rect class="purple" x="238" y="224" width="190" height="40" rx="8"/>
+<text x="333" y="249" text-anchor="middle" class="mono">(2,9) (3,4)</text>
+<rect class="purple" x="452" y="224" width="190" height="40" rx="8"/>
+<text x="547" y="249" text-anchor="middle" class="mono">(5,6) (6,7)</text>
+<rect class="purple" x="666" y="224" width="190" height="40" rx="8"/>
+<text x="761" y="249" text-anchor="middle" class="mono">(8,10) (9,11)</text>
+<text x="856" y="286" text-anchor="end" class="ts">엔트리 = (customer_id, rowid) · 루트 3개 + 리프 9개 = 12개</text>
+
+<!-- 리프 → 테이블 -->
+<path class="ln ln-blue" d="M119,266 L119,392 L340,392" marker-end="url(#arrow-blue)"/>
+<text x="232" y="382" text-anchor="middle" class="ts c-blue">rowid 1, 2, 12 로 이동</text>
+<text x="24" y="428" class="ts">나머지 9행은 읽지 않는다</text>
+
+<!-- 테이블 -->
+<text x="344" y="314"><tspan class="tb c-purple">테이블</tspan> <tspan class="mono">order_header</tspan> <tspan class="c-purple">(rowid 순서 B-tree)</tspan></text>
+<rect class="purple" x="344" y="324" width="512" height="124" rx="10"/>
+<rect class="yellow" x="360" y="336" width="480" height="28" rx="6"/>
+<text x="600" y="355" text-anchor="middle" class="mono">rowid 1 · customer 1 · 2026-04-15 09:12:00 · COMPLETED</text>
+<rect class="yellow" x="360" y="372" width="480" height="28" rx="6"/>
+<text x="600" y="391" text-anchor="middle" class="mono">rowid 2 · customer 1 · 2026-04-25 14:05:00 · COMPLETED</text>
+<rect class="yellow" x="360" y="408" width="480" height="28" rx="6"/>
+<text x="600" y="427" text-anchor="middle" class="mono">rowid 12 · customer 1 · 2026-05-10 19:30:00 · COMPLETED</text>
+
+<!-- 하단 메모 -->
+<text x="24" y="480" class="ts">B-tree 모양 설명도 — 실제 12행은 페이지(4,096 B) 1장에 들어간다</text>
+<text x="24" y="500" class="ts">100만 행 실측: 인덱스 높이 3 (루트 1 · 중간 11 · 리프 2,763 페이지)</text>
+<text x="24" y="520" class="ts">조회 59.905 ms → 0.089 ms · 파일 +27.7% · 10만 행 INSERT 0.468 s → 1.043 s</text>
+</svg>
